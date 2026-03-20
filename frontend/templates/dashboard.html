@@ -15,13 +15,13 @@
       </div>
     </div>
     <nav class="sidebar-nav">
-      <button class="sidebar-item is-active" data-section-target="crop">{{ t('nav_crop_prediction') }}</button>
-      <button class="sidebar-item" data-section-target="price">{{ t('nav_price_prediction') }}</button>
-      <button class="sidebar-item" data-section-target="weather">{{ t('nav_weather_alerts') }}</button>
-      <button class="sidebar-item" data-section-target="soil">{{ t('nav_soil_health') }}</button>
-      <button class="sidebar-item" data-section-target="irrigation">{{ t('nav_irrigation_schedule') }}</button>
-      <button class="sidebar-item" data-section-target="market">{{ t('nav_market_trends') }}</button>
-      <button class="sidebar-item" data-section-target="feedback">{{ t('nav_feedback') }}</button>
+      <button type="button" class="sidebar-item is-active" data-section-target="crop">{{ t('nav_crop_prediction') }}</button>
+      <button type="button" class="sidebar-item" data-section-target="price">{{ t('nav_price_prediction') }}</button>
+      <button type="button" class="sidebar-item" data-section-target="weather">{{ t('nav_weather_alerts') }}</button>
+      <button type="button" class="sidebar-item" data-section-target="soil">{{ t('nav_soil_health') }}</button>
+      <button type="button" class="sidebar-item" data-section-target="irrigation">{{ t('nav_irrigation_schedule') }}</button>
+      <button type="button" class="sidebar-item" data-section-target="market">{{ t('nav_market_trends') }}</button>
+      <button type="button" class="sidebar-item" data-section-target="feedback">{{ t('nav_feedback') }}</button>
     </nav>
   </aside>
 
@@ -127,23 +127,13 @@
           <p class="price-detail-kicker">{{ t('price_detail_title') }}</p>
           <h3 id="price-detail-name" class="price-detail-name">-</h3>
           <p id="price-detail-subtitle" class="price-detail-subtitle">{{ t('price_detail_subtitle') }}</p>
-          <div class="price-detail-list">
-            <div class="price-detail-row">
-              <span>{{ t('price_detail_current_label') }}</span>
-              <strong id="price-detail-current">-</strong>
-            </div>
-            <div class="price-detail-row">
-              <span>{{ t('price_detail_previous_label') }}</span>
-              <strong id="price-detail-previous">-</strong>
-            </div>
-            <div class="price-detail-row">
+          <div class="price-detail-table">
+            <div class="price-detail-table-head">
               <span>{{ t('price_detail_region_label') }}</span>
-              <strong id="price-detail-region">-</strong>
+              <span>{{ t('price_detail_current_label') }}</span>
+              <span>{{ t('price_detail_previous_label') }}</span>
             </div>
-            <div class="price-detail-row">
-              <span>{{ t('price_detail_category_label') }}</span>
-              <strong id="price-detail-category">-</strong>
-            </div>
+            <div id="price-detail-rows" class="price-detail-table-body"></div>
           </div>
         </div>
       </div>

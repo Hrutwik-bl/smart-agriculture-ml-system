@@ -4,15 +4,22 @@
 
   const activateSection = (target) => {
     sections.forEach((section) => {
-      section.classList.toggle("is-active", section.dataset.sectionPanel === target);
+      const isActive = section.dataset.sectionPanel === target;
+      section.classList.toggle("is-active", isActive);
+      section.hidden = !isActive;
     });
     sectionButtons.forEach((button) => {
-      button.classList.toggle("is-active", button.dataset.sectionTarget === target);
+      const isActive = button.dataset.sectionTarget === target;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-pressed", String(isActive));
     });
   };
 
   sectionButtons.forEach((button) => {
-    button.addEventListener("click", () => activateSection(button.dataset.sectionTarget));
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      activateSection(button.dataset.sectionTarget);
+    });
   });
 
   if (sectionButtons.length) {
@@ -86,10 +93,7 @@
     const priceDetail = {
       name: document.getElementById("price-detail-name"),
       subtitle: document.getElementById("price-detail-subtitle"),
-      current: document.getElementById("price-detail-current"),
-      previous: document.getElementById("price-detail-previous"),
-      region: document.getElementById("price-detail-region"),
-      category: document.getElementById("price-detail-category"),
+      rows: document.getElementById("price-detail-rows"),
     };
     const defaultDetailSubtitle = priceDetail.subtitle ? priceDetail.subtitle.textContent : "";
     const searchInput = document.getElementById("price-search");
@@ -144,57 +148,109 @@
       });
     }
 
-    const priceData = [
-      { crop: "Tomato", category: "Vegetables", region: "Maharashtra", price: 28, previous: 24, unit: "kg" },
-      { crop: "Onion", category: "Vegetables", region: "Gujarat", price: 32, previous: 30, unit: "kg" },
-      { crop: "Potato", category: "Vegetables", region: "Uttar Pradesh", price: 26, previous: 25, unit: "kg" },
-      { crop: "Okra", category: "Vegetables", region: "Telangana", price: 34, previous: 31, unit: "kg" },
-      { crop: "Apple", category: "Fruits", region: "Himachal Pradesh", price: 110, previous: 98, unit: "kg" },
-      { crop: "Banana", category: "Fruits", region: "Tamil Nadu", price: 46, previous: 41, unit: "kg" },
-      { crop: "Mango", category: "Fruits", region: "Andhra Pradesh", price: 75, previous: 70, unit: "kg" },
-      { crop: "Grapes", category: "Fruits", region: "Maharashtra", price: 88, previous: 82, unit: "kg" },
-      { crop: "Spinach", category: "Leafy", region: "Punjab", price: 22, previous: 19, unit: "kg" },
-      { crop: "Coriander", category: "Leafy", region: "Karnataka", price: 18, previous: 16, unit: "kg" },
-      { crop: "Rice", category: "Other", region: "West Bengal", price: 32, previous: 30, unit: "kg" },
-      { crop: "Wheat", category: "Other", region: "Rajasthan", price: 29, previous: 27, unit: "kg" },
-      { crop: "Maize", category: "Other", region: "Bihar", price: 24, previous: 22, unit: "kg" },
+    const cropCatalog = [
+      { name: "Tomato", category: "Vegetables", unit: "kg" },
+      { name: "Onion", category: "Vegetables", unit: "kg" },
+      { name: "Potato", category: "Vegetables", unit: "kg" },
+      { name: "Okra", category: "Vegetables", unit: "kg" },
+      { name: "Apple", category: "Fruits", unit: "kg" },
+      { name: "Banana", category: "Fruits", unit: "kg" },
+      { name: "Mango", category: "Fruits", unit: "kg" },
+      { name: "Grapes", category: "Fruits", unit: "kg" },
+      { name: "Spinach", category: "Leafy", unit: "kg" },
+      { name: "Coriander", category: "Leafy", unit: "kg" },
+      { name: "Rice", category: "Other", unit: "kg" },
+      { name: "Wheat", category: "Other", unit: "kg" },
+      { name: "Maize", category: "Other", unit: "kg" },
     ];
 
+    const priceRows = cropCatalog.flatMap((crop, cropIndex) =>
+      regionList.map((region, regionIndex) => {
+        const base = 20 + cropIndex * 4 + ((regionIndex * 7) % 15);
+        const variance = (region.length % 5) - 2;
+        const price = Math.max(16, base + variance);
+        const previous = Math.max(12, price - (2 + (regionIndex % 4)));
+        return {
+          crop: crop.name,
+          category: crop.category,
+          region,
+          price,
+          previous,
+          unit: crop.unit,
+        };
+      })
+    );
+
     let activeCategory = "all";
+    let activeCrop = cropCatalog[0]?.name || null;
 
     const formatPrice = (value, unit) => `Rs ${value}/${unit}`;
 
-    const updateDetail = (item) => {
-      if (!item) return;
-      if (priceDetail.name) priceDetail.name.textContent = item.crop;
+    const getRowsForCrop = (cropName) => priceRows.filter((item) => item.crop === cropName);
+
+    const getAveragePrices = (rows) => {
+      if (!rows.length) return { price: 0, previous: 0 };
+      const totals = rows.reduce(
+        (acc, row) => {
+          acc.price += row.price;
+          acc.previous += row.previous;
+          return acc;
+        },
+        { price: 0, previous: 0 }
+      );
+      return {
+        price: Math.round(totals.price / rows.length),
+        previous: Math.round(totals.previous / rows.length),
+      };
+    };
+
+    const updateDetail = (cropName) => {
+      if (!cropName) return;
+      const rows = getRowsForCrop(cropName);
+      if (!rows.length) return;
+
+      const regionValue = regionSelect ? regionSelect.value : "all";
+      const regionAllLabel = regionSelect ? regionSelect.options[0].textContent : "All Regions";
+      const selectedRegion = regionValue === "all" ? null : regionValue;
+
+      if (priceDetail.name) priceDetail.name.textContent = cropName;
       if (priceDetail.subtitle) {
-        priceDetail.subtitle.textContent = `${item.category} - ${item.region}`;
+        priceDetail.subtitle.textContent = `${rows[0].category} - ${regionAllLabel}`;
       }
-      if (priceDetail.current) priceDetail.current.textContent = formatPrice(item.price, item.unit);
-      if (priceDetail.previous) priceDetail.previous.textContent = formatPrice(item.previous, item.unit);
-      if (priceDetail.region) priceDetail.region.textContent = item.region;
-      if (priceDetail.category) priceDetail.category.textContent = item.category;
+
+      if (priceDetail.rows) {
+        priceDetail.rows.innerHTML = "";
+        rows.forEach((row) => {
+          const rowEl = document.createElement("div");
+          rowEl.className = `price-detail-table-row${selectedRegion === row.region ? " is-highlight" : ""}`;
+          rowEl.innerHTML = `
+            <span>${row.region}</span>
+            <strong>${formatPrice(row.price, row.unit)}</strong>
+            <span>${formatPrice(row.previous, row.unit)}</span>
+          `;
+          priceDetail.rows.appendChild(rowEl);
+        });
+      }
     };
 
     const clearDetail = () => {
       if (priceDetail.name) priceDetail.name.textContent = "-";
       if (priceDetail.subtitle) priceDetail.subtitle.textContent = defaultDetailSubtitle;
-      if (priceDetail.current) priceDetail.current.textContent = "-";
-      if (priceDetail.previous) priceDetail.previous.textContent = "-";
-      if (priceDetail.region) priceDetail.region.textContent = "-";
-      if (priceDetail.category) priceDetail.category.textContent = "-";
+      if (priceDetail.rows) priceDetail.rows.innerHTML = "";
     };
 
     const renderPrices = () => {
       const query = searchInput ? searchInput.value.trim().toLowerCase() : "";
       const region = regionSelect ? regionSelect.value : "all";
-      const filtered = priceData.filter((item) => {
+      const filtered = cropCatalog.filter((item) => {
         const matchesCategory = activeCategory === "all" || item.category === activeCategory;
-        const matchesRegion = region === "all" || item.region === region;
-        const matchesQuery = !query || item.crop.toLowerCase().includes(query);
-        return matchesCategory && matchesRegion && matchesQuery;
+        const matchesQuery = !query || item.name.toLowerCase().includes(query);
+        return matchesCategory && matchesQuery;
       });
       const lastYearLabel = priceGrid.dataset.lastYearLabel || "last year";
+      const regionLabel = regionSelect
+        ? regionSelect.options[regionSelect.selectedIndex].textContent
+        : "All Regions";
 
       priceGrid.innerHTML = "";
       if (!filtered.length) {
@@ -202,23 +258,45 @@
         return;
       }
 
+      if (!activeCrop || !filtered.some((item) => item.name === activeCrop)) {
+        activeCrop = filtered[0].name;
+      }
+
       filtered.forEach((item) => {
+        const rows = getRowsForCrop(item.name);
+        const average = getAveragePrices(rows);
+        const displayRow =
+          region === "all"
+            ? {
+                price: average.price,
+                previous: average.previous,
+                region: regionLabel,
+                unit: item.unit,
+              }
+            : rows.find((row) => row.region === region);
+
+        if (!displayRow) return;
+
         const card = document.createElement("button");
         card.type = "button";
-        card.className = "price-card";
+        card.className = `price-card${item.name === activeCrop ? " is-active" : ""}`;
         card.innerHTML = `
           <div class="price-card-header">
-            <h4 class="price-card-title">${item.crop}</h4>
+            <h4 class="price-card-title">${item.name}</h4>
             <span class="price-card-tag">${item.category}</span>
           </div>
-          <p class="price-card-price">${formatPrice(item.price, item.unit)}</p>
-          <p class="price-card-meta">${item.region} - ${formatPrice(item.previous, item.unit)} ${lastYearLabel}</p>
+          <p class="price-card-price">${formatPrice(displayRow.price, item.unit)}</p>
+          <p class="price-card-meta">${displayRow.region} - ${formatPrice(displayRow.previous, item.unit)} ${lastYearLabel}</p>
         `;
-        card.addEventListener("click", () => updateDetail(item));
+        card.addEventListener("click", () => {
+          activeCrop = item.name;
+          updateDetail(activeCrop);
+          renderPrices();
+        });
         priceGrid.appendChild(card);
       });
 
-      updateDetail(filtered[0]);
+      updateDetail(activeCrop);
     };
 
     categoryButtons.forEach((button) => {
@@ -232,8 +310,12 @@
     if (searchInput) {
       searchInput.addEventListener("input", renderPrices);
     }
+
     if (regionSelect) {
-      regionSelect.addEventListener("change", renderPrices);
+      regionSelect.addEventListener("change", () => {
+        renderPrices();
+        updateDetail(activeCrop);
+      });
     }
 
     renderPrices();

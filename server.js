@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
@@ -6,9 +7,13 @@ const fs = require("fs");
 const fetch = require("node-fetch");
 const nunjucks = require("nunjucks");
 const { SUPPORTED_LANGUAGES, translate } = require("./server/i18n");
+const apiRoutes = require("./server/routes");
+const { PORT } = require("./server/config");
+const { isApiError } = require("./server/utils/errors");
+const { fail } = require("./server/utils/response");
+const { connectDb } = require("./server/services/db");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 const SESSION_SECRET = process.env.SESSION_SECRET || "smart-agri-dev-secret";
 const USERS_FILE = path.join(__dirname, "data", "users.json");
 
@@ -103,6 +108,9 @@ app.use(
 );
 
 app.use("/static", express.static(path.join(__dirname, "frontend", "static")));
+
+app.use(apiRoutes);
+app.use("/api", apiRoutes);
 
 const templatesPath = path.join(__dirname, "frontend", "templates");
 nunjucks.configure(templatesPath, {
@@ -315,6 +323,40 @@ app.get("/resolve-location", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Smart Agriculture UI running on http://127.0.0.1:${PORT}`);
+app.use((error, req, res, next) => {
+  if (res.headersSent) {
+    return next(error);
+  }
+  const apiPaths = new Set([
+    "/crop-prediction",
+    "/irrigation",
+    "/weather-alerts",
+    "/soil-health",
+    "/price-prediction",
+    "/market-trends"
+  ]);
+  const wantsJson =
+    req.path.startsWith("/api") ||
+    apiPaths.has(req.path) ||
+    req.headers.accept?.includes("application/json");
+  if (wantsJson) {
+    const status = isApiError(error) ? error.status : 500;
+    return fail(res, error, status);
+  }
+  return res.status(500).send("Unexpected server error");
 });
+
+connectDb()
+  .then((client) => {
+    if (client) {
+      console.log("MongoDB connected");
+    }
+  })
+  .catch((error) => {
+    console.warn("MongoDB connection failed", error.message);
+  })
+  .finally(() => {
+    app.listen(PORT, () => {
+      console.log(`Smart Agriculture UI running on http://127.0.0.1:${PORT}`);
+    });
+  });
