@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="{{ current_lang }}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ t('app_title') }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#effaf4',
+              100: '#d8f4e4',
+              200: '#b4e9ca',
+              300: '#80d6a7',
+              400: '#4cb67e',
+              500: '#2f965f',
+              600: '#22784a',
+              700: '#1d603e',
+              800: '#1a4d33',
+              900: '#163f2b'
+            }
+          },
+          boxShadow: {
+            'soft-xl': '0 20px 40px rgba(22, 63, 43, 0.14)'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/static/style.css" />
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-screen bg-gradient-to-br from-brand-50 via-white to-brand-100 text-slate-800">
+  <div class="w-full min-h-screen px-4 sm:px-6 lg:px-8 py-6 flex flex-col">
+    <header class="bg-white/85 backdrop-blur rounded-2xl border border-brand-100 shadow-soft-xl px-5 py-4 mb-6">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex items-center gap-3">
+          <div>
+            <p class="font-display font-bold text-lg text-brand-900 leading-tight">
+              {{ t('app_title_prefix') }}
+              <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 text-white text-base align-middle shadow-lg">🌱</span>
+              {{ t('app_title_suffix') }}
+            </p>
+            <p class="text-sm text-slate-500">{{ t('app_subtitle') }}</p>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
+          <form action="/set-language" method="get" class="flex items-center gap-2">
+            <input type="hidden" name="next" value="{{ requestPath }}" />
+            <label for="lang-select" class="text-sm font-medium text-slate-600">{{ t('language') }}</label>
+            <select id="lang-select" name="lang" onchange="this.form.submit()" class="rounded-lg border border-brand-200 bg-white px-3 py-2 text-sm text-slate-700">
+              {% for language in supported_languages %}
+                <option value="{{ language.code }}" {% if current_lang == language.code %}selected{% endif %}>{{ language.label }}</option>
+              {% endfor %}
+            </select>
+          </form>
+
+          {% if session.username %}
+          <nav class="flex flex-wrap gap-2">
+            <a href="/dashboard" class="inline-flex items-center rounded-lg bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700">{{ t('nav_dashboard') }}</a>
+            <span class="inline-flex items-center rounded-lg border border-brand-200 px-3 py-2 text-sm text-brand-900 bg-white">👨‍🌾 {{ session.username }}</span>
+            <a href="/logout" class="inline-flex items-center rounded-lg bg-slate-800 px-3 py-2 text-sm font-semibold text-white hover:bg-slate-900">{{ t('nav_logout') }}</a>
+          </nav>
+          {% endif %}
+        </div>
+      </div>
+    </header>
+
+    {% if messages and messages.length %}
+      <div class="space-y-3 mb-4">
+        {% for message in messages %}
+          <div class="rounded-xl border px-4 py-3 text-sm {{ message.css }}">{{ message.text }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <main class="flex-1 flex flex-col">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

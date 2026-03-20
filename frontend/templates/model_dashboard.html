@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<section class="rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-brand-800 px-6 py-8 text-white shadow-soft-xl">
+  <div class="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-start">
+    <div>
+      <p class="text-xs font-semibold tracking-widest text-slate-200">MODEL OBSERVABILITY HUB</p>
+      <h2 class="mt-2 text-3xl font-black">{{ t('model_performance') }}</h2>
+      <p class="mt-2 text-slate-200 text-sm">Track model quality, compare regressors, and validate recommendation confidence.</p>
+    </div>
+    <div class="rounded-2xl bg-white/10 p-4 border border-white/10">
+      <p class="text-xs text-slate-300">Training Status</p>
+      <p class="mt-1 text-lg font-bold">{{ metrics_payload.status }}</p>
+      <p class="text-xs text-slate-300 mt-1">{{ metrics_payload.trained_at }}</p>
+    </div>
+  </div>
+</section>
+
+<section class="mt-6 grid gap-3 md:grid-cols-3">
+  <div class="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm">
+    <p class="text-xs text-slate-500">RF Accuracy</p>
+    <p class="mt-2 text-2xl font-black text-brand-800">{{ (metrics_payload.metrics.recommendation.rf_accuracy * 100)|round(2) if metrics_payload.metrics else 'N/A' }}%</p>
+  </div>
+  <div class="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm">
+    <p class="text-xs text-slate-500">XGB/Fallback Accuracy</p>
+    <p class="mt-2 text-2xl font-black text-brand-800">{{ (metrics_payload.metrics.recommendation.xgb_accuracy * 100)|round(2) if metrics_payload.metrics else 'N/A' }}%</p>
+  </div>
+  <div class="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm">
+    <p class="text-xs text-slate-500">XGBoost Enabled</p>
+    <p class="mt-2 text-2xl font-black text-brand-800">{{ metrics_payload.xgboost_available }}</p>
+  </div>
+</section>
+
+<section class="mt-6 rounded-3xl border border-brand-100 bg-white p-6 shadow-soft-xl">
+  <h3 class="text-lg font-bold text-brand-900">Recommendation Model Metrics</h3>
+  <div class="mt-4 h-80">
+    <canvas id="recommendation-chart"></canvas>
+  </div>
+</section>
+
+<section class="mt-6 rounded-3xl border border-brand-100 bg-white p-6 shadow-soft-xl">
+  <h3 class="text-lg font-bold text-brand-900">Regression MAE Comparison</h3>
+  <div class="mt-4 h-80">
+    <canvas id="regression-mae-chart"></canvas>
+  </div>
+</section>
+
+<section class="mt-6 rounded-3xl border border-brand-100 bg-white p-6 shadow-soft-xl">
+  <h3 class="text-lg font-bold text-brand-900">Regression R² Comparison</h3>
+  <div class="mt-4 h-80">
+    <canvas id="regression-r2-chart"></canvas>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.modelMetrics = {{ chart_data_json|safe }};
+</script>
+<script src="{{ url_for('static', filename='model_dashboard.js') }}"></script>
+{% endblock %}

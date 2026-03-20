@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="flex flex-1 flex-col gap-8">
+  <section class="agri-hero flex-1" style="background-image: url('/static/hero-1.png');">
+    <div class="agri-hero-content px-6 py-10 lg:px-10">
+      <div class="grid gap-10">
+        <div class="fade-up" style="animation-delay: 0.05s;">
+          <p class="hero-chip">{{ t('landing_chip') }}</p>
+          <h2 class="font-display mt-5 text-4xl font-black leading-tight sm:text-5xl">{{ t('landing_headline') }}</h2>
+          <p class="mt-5 text-sm text-brand-50/95 sm:text-base">{{ t('landing_description') }}</p>
+          <div class="mt-6 flex flex-wrap gap-2 text-xs font-semibold text-brand-50/90">
+            <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1">{{ t('landing_chip_live') }}</span>
+            <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1">{{ t('landing_chip_irrigation') }}</span>
+            <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1">{{ t('landing_chip_signals') }}</span>
+          </div>
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+            <a href="/login" class="hero-action primary">{{ t('login') }}</a>
+            <a href="/signup" class="hero-action secondary">{{ t('signup') }}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="feature-strip" style="background-image: url('/static/hero-2.png');">
+    <div class="feature-strip-content">
+      <div class="grid gap-4 lg:grid-cols-3">
+        <div class="hero-stat large fade-up" style="animation-delay: 0.15s;">
+          <p class="text-xs uppercase tracking-wide text-brand-50/70">{{ t('stats_recommendations_label') }}</p>
+          <p class="mt-2 text-3xl font-black">{{ t('stats_recommendations_value') }}</p>
+        </div>
+        <div class="hero-stat large fade-up" style="animation-delay: 0.2s;">
+          <p class="text-xs uppercase tracking-wide text-brand-50/70">{{ t('stats_prediction_label') }}</p>
+          <p class="mt-2 text-2xl font-black">{{ t('stats_prediction_value') }}</p>
+        </div>
+        <div class="hero-stat large fade-up" style="animation-delay: 0.25s;">
+          <p class="text-xs uppercase tracking-wide text-brand-50/70">{{ t('stats_unified_label') }}</p>
+          <p class="mt-2 text-base font-semibold">{{ t('stats_unified_value') }}</p>
+        </div>
+      </div>
+      <div class="grid gap-4 lg:grid-cols-3">
+        <article class="feature-panel fade-up" style="animation-delay: 0.2s;">
+          <h3 class="font-display text-lg">{{ t('feature_crop_title') }}</h3>
+          <p class="mt-2 text-sm">{{ t('feature_crop_desc') }}</p>
+        </article>
+        <article class="feature-panel fade-up" style="animation-delay: 0.3s;">
+          <h3 class="font-display text-lg">{{ t('feature_irrigation_title') }}</h3>
+          <p class="mt-2 text-sm">{{ t('feature_irrigation_desc') }}</p>
+        </article>
+        <article class="feature-panel fade-up" style="animation-delay: 0.4s;">
+          <h3 class="font-display text-lg">{{ t('feature_market_title') }}</h3>
+          <p class="mt-2 text-sm">{{ t('feature_market_desc') }}</p>
+        </article>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
