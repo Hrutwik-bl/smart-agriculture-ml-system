@@ -1301,8 +1301,8 @@ const TRANSLATIONS = {
     "fr": "Laissez vide pour la recommandation IA"
   },
   "location_status_hint": {
-    "en": "Tap live location or map picker to auto-fill.",
-    "en-GB": "Tap live location or map picker to auto-fill.",
+    "en": "Tap live location to auto-fill.",
+    "en-GB": "Tap live location to auto-fill.",
     "hi": "ऑटो-फिल के लिए लाइव लोकेशन या मैप पिकर टैप करें।",
     "kn": "ಸ್ವಯಂ ಭರ್ತಿಗೆ ಲೈವ್ ಲೊಕೇಶನ್ ಅಥವಾ ನಕ್ಷೆ ಆಯ್ಕೆಯನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.",
     "te": "ఆటో-ఫిల్ కోసం లైవ్ లొకేషన్ లేదా మ్యాప్ పికర్‌ను ట్యాప్ చేయండి.",
@@ -1579,6 +1579,330 @@ const TRANSLATIONS = {
     "ne": "ड्यासबोर्ड पहुँचका लागि लगइन गर्नुहोस्",
     "es": "Inicia sesión para acceder al panel",
     "fr": "Connectez-vous pour accéder au tableau de bord"
+  },
+  "sidebar_title": {
+    "en": "Farm Intelligence",
+    "en-GB": "Farm Intelligence"
+  },
+  "sidebar_subtitle": {
+    "en": "Single-page command dashboard",
+    "en-GB": "Single-page command dashboard"
+  },
+  "sidebar_user_role": {
+    "en": "Field Operator",
+    "en-GB": "Field Operator"
+  },
+  "nav_crop_prediction": {
+    "en": "Crop Prediction",
+    "en-GB": "Crop Prediction"
+  },
+  "nav_price_prediction": {
+    "en": "Price Prediction",
+    "en-GB": "Price Prediction"
+  },
+  "nav_weather_alerts": {
+    "en": "Weather Alerts",
+    "en-GB": "Weather Alerts"
+  },
+  "nav_soil_health": {
+    "en": "Soil Health",
+    "en-GB": "Soil Health"
+  },
+  "nav_irrigation_schedule": {
+    "en": "Irrigation Schedule",
+    "en-GB": "Irrigation Schedule"
+  },
+  "nav_market_trends": {
+    "en": "Market Trends",
+    "en-GB": "Market Trends"
+  },
+  "nav_feedback": {
+    "en": "Feedback",
+    "en-GB": "Feedback"
+  },
+  "crop_snapshot_title": {
+    "en": "Crop Prediction Snapshot",
+    "en-GB": "Crop Prediction Snapshot"
+  },
+  "crop_snapshot_subtitle": {
+    "en": "Quick cues before you run the full model.",
+    "en-GB": "Quick cues before you run the full model."
+  },
+  "crop_card_crop_title": {
+    "en": "Recommendation Watchlist",
+    "en-GB": "Recommendation Watchlist"
+  },
+  "crop_card_crop_desc": {
+    "en": "Add location and season to highlight top crops for the week.",
+    "en-GB": "Add location and season to highlight top crops for the week."
+  },
+  "crop_card_irrigation_title": {
+    "en": "Irrigation Outlook",
+    "en-GB": "Irrigation Outlook"
+  },
+  "crop_card_irrigation_desc": {
+    "en": "Track upcoming water stress and suggested irrigation timing.",
+    "en-GB": "Track upcoming water stress and suggested irrigation timing."
+  },
+  "crop_card_market_title": {
+    "en": "Market Pulse",
+    "en-GB": "Market Pulse"
+  },
+  "crop_card_market_desc": {
+    "en": "Compare local price momentum before planting decisions.",
+    "en-GB": "Compare local price momentum before planting decisions."
+  },
+  "price_title": {
+    "en": "Price Prediction",
+    "en-GB": "Price Prediction"
+  },
+  "price_description": {
+    "en": "Sample prices by region and crop category.",
+    "en-GB": "Sample prices by region and crop category."
+  },
+  "price_search_placeholder": {
+    "en": "Search crop",
+    "en-GB": "Search crop"
+  },
+  "price_region_all": {
+    "en": "All Regions",
+    "en-GB": "All Regions"
+  },
+  "price_category_all": {
+    "en": "All",
+    "en-GB": "All"
+  },
+  "price_category_vegetables": {
+    "en": "Vegetables",
+    "en-GB": "Vegetables"
+  },
+  "price_category_fruits": {
+    "en": "Fruits",
+    "en-GB": "Fruits"
+  },
+  "price_category_leafy": {
+    "en": "Leafy",
+    "en-GB": "Leafy"
+  },
+  "price_category_other": {
+    "en": "Other",
+    "en-GB": "Other"
+  },
+  "price_detail_title": {
+    "en": "Selected Crop",
+    "en-GB": "Selected Crop"
+  },
+  "price_detail_subtitle": {
+    "en": "Pick a card to view details.",
+    "en-GB": "Pick a card to view details."
+  },
+  "price_detail_current_label": {
+    "en": "Current price",
+    "en-GB": "Current price"
+  },
+  "price_detail_previous_label": {
+    "en": "Previous year",
+    "en-GB": "Previous year"
+  },
+  "price_detail_region_label": {
+    "en": "Region",
+    "en-GB": "Region"
+  },
+  "price_detail_category_label": {
+    "en": "Category",
+    "en-GB": "Category"
+  },
+  "price_last_year": {
+    "en": "last year",
+    "en-GB": "last year"
+  },
+  "weather_title": {
+    "en": "Weather Alerts",
+    "en-GB": "Weather Alerts"
+  },
+  "weather_description": {
+    "en": "Seasonal alerts based on recent weather patterns.",
+    "en-GB": "Seasonal alerts based on recent weather patterns."
+  },
+  "weather_card_drought_title": {
+    "en": "Dry Spell Watch",
+    "en-GB": "Dry Spell Watch"
+  },
+  "weather_card_drought_desc": {
+    "en": "Low rainfall expected in central belts this week.",
+    "en-GB": "Low rainfall expected in central belts this week."
+  },
+  "weather_card_rain_title": {
+    "en": "Rainfall Window",
+    "en-GB": "Rainfall Window"
+  },
+  "weather_card_rain_desc": {
+    "en": "Short showers likely near coastal zones after 3 days.",
+    "en-GB": "Short showers likely near coastal zones after 3 days."
+  },
+  "weather_card_temp_title": {
+    "en": "Heat Stress",
+    "en-GB": "Heat Stress"
+  },
+  "weather_card_temp_desc": {
+    "en": "Daytime temperatures trending higher in northern plains.",
+    "en-GB": "Daytime temperatures trending higher in northern plains."
+  },
+  "soil_title": {
+    "en": "Soil Health",
+    "en-GB": "Soil Health"
+  },
+  "soil_description": {
+    "en": "Sample soil indicators for quick planning.",
+    "en-GB": "Sample soil indicators for quick planning."
+  },
+  "soil_card_ph_title": {
+    "en": "Soil pH",
+    "en-GB": "Soil pH"
+  },
+  "soil_card_ph_desc": {
+    "en": "Balanced range expected for most fields this month.",
+    "en-GB": "Balanced range expected for most fields this month."
+  },
+  "soil_card_moisture_title": {
+    "en": "Moisture Index",
+    "en-GB": "Moisture Index"
+  },
+  "soil_card_moisture_desc": {
+    "en": "Surface moisture trending moderate after recent rain.",
+    "en-GB": "Surface moisture trending moderate after recent rain."
+  },
+  "soil_card_fertility_title": {
+    "en": "Nutrient Outlook",
+    "en-GB": "Nutrient Outlook"
+  },
+  "soil_card_fertility_desc": {
+    "en": "Nitrogen supplementation recommended in sandy soils.",
+    "en-GB": "Nitrogen supplementation recommended in sandy soils."
+  },
+  "irrigation_title": {
+    "en": "Irrigation Schedule",
+    "en-GB": "Irrigation Schedule"
+  },
+  "irrigation_description": {
+    "en": "Suggested irrigation cadence for sample plots.",
+    "en-GB": "Suggested irrigation cadence for sample plots."
+  },
+  "irrigation_card_weekly_title": {
+    "en": "Weekly Cadence",
+    "en-GB": "Weekly Cadence"
+  },
+  "irrigation_card_weekly_desc": {
+    "en": "2 light irrigations recommended for the next 7 days.",
+    "en-GB": "2 light irrigations recommended for the next 7 days."
+  },
+  "irrigation_card_method_title": {
+    "en": "Best Method",
+    "en-GB": "Best Method"
+  },
+  "irrigation_card_method_desc": {
+    "en": "Drip irrigation suggested for water efficiency.",
+    "en-GB": "Drip irrigation suggested for water efficiency."
+  },
+  "irrigation_card_alert_title": {
+    "en": "Next Check-in",
+    "en-GB": "Next Check-in"
+  },
+  "irrigation_card_alert_desc": {
+    "en": "Review soil moisture in 48 hours for updates.",
+    "en-GB": "Review soil moisture in 48 hours for updates."
+  },
+  "market_title": {
+    "en": "Market Trends",
+    "en-GB": "Market Trends"
+  },
+  "market_description": {
+    "en": "Signals from nearby mandis and wholesale markets.",
+    "en-GB": "Signals from nearby mandis and wholesale markets."
+  },
+  "market_card_price_title": {
+    "en": "Price Momentum",
+    "en-GB": "Price Momentum"
+  },
+  "market_card_price_desc": {
+    "en": "Vegetable prices edging higher in western markets.",
+    "en-GB": "Vegetable prices edging higher in western markets."
+  },
+  "market_card_demand_title": {
+    "en": "Demand Signal",
+    "en-GB": "Demand Signal"
+  },
+  "market_card_demand_desc": {
+    "en": "Pulses demand steady across southern hubs.",
+    "en-GB": "Pulses demand steady across southern hubs."
+  },
+  "market_card_export_title": {
+    "en": "Export Pulse",
+    "en-GB": "Export Pulse"
+  },
+  "market_card_export_desc": {
+    "en": "Fruit shipments rising through eastern corridors.",
+    "en-GB": "Fruit shipments rising through eastern corridors."
+  },
+  "feedback_title": {
+    "en": "Feedback",
+    "en-GB": "Feedback"
+  },
+  "feedback_description": {
+    "en": "Share field feedback to improve recommendations.",
+    "en-GB": "Share field feedback to improve recommendations."
+  },
+  "feedback_name_label": {
+    "en": "Name (optional)",
+    "en-GB": "Name (optional)"
+  },
+  "feedback_name_placeholder": {
+    "en": "Your name",
+    "en-GB": "Your name"
+  },
+  "feedback_rating_label": {
+    "en": "Overall rating",
+    "en-GB": "Overall rating"
+  },
+  "feedback_rating_placeholder": {
+    "en": "Select rating",
+    "en-GB": "Select rating"
+  },
+  "feedback_message_label": {
+    "en": "Notes for the agronomy team",
+    "en-GB": "Notes for the agronomy team"
+  },
+  "feedback_message_placeholder": {
+    "en": "What worked well? What needs improvement?",
+    "en-GB": "What worked well? What needs improvement?"
+  },
+  "feedback_submit": {
+    "en": "Send feedback",
+    "en-GB": "Send feedback"
+  },
+  "feedback_success": {
+    "en": "Thanks for the feedback. We will review it shortly.",
+    "en-GB": "Thanks for the feedback. We will review it shortly."
+  },
+  "location_status_detecting": {
+    "en": "Detecting your location...",
+    "en-GB": "Detecting your location..."
+  },
+  "location_status_denied": {
+    "en": "Unable to access your location.",
+    "en-GB": "Unable to access your location."
+  },
+  "location_status_error": {
+    "en": "Unable to resolve your location name.",
+    "en-GB": "Unable to resolve your location name."
+  },
+  "location_status_unsupported": {
+    "en": "Geolocation is not supported in this browser.",
+    "en-GB": "Geolocation is not supported in this browser."
+  },
+  "location_status_resolved": {
+    "en": "Location detected successfully.",
+    "en-GB": "Location detected successfully."
   }
 };
 

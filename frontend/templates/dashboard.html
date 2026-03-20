@@ -1,225 +1,278 @@
 {% extends 'base.html' %}
-{% block extra_head %}
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-  crossorigin=""
-/>
-{% endblock %}
 
 {% block content %}
-<section class="dashboard-hero px-6 py-10 shadow-soft-xl" style="background-image: url('/static/dash-bg.png');">
-  <div class="dashboard-hero-content">
-    <div>
-      <p class="text-xs tracking-widest font-semibold text-brand-50/90">{{ t('dashboard_kicker') }}</p>
-      <h2 class="font-display mt-2 text-3xl font-black">{{ t('dashboard_welcome') }}, {{ username }}</h2>
-      <p class="mt-2 text-brand-50/90">{{ t('dashboard_description') }}</p>
-      <div class="mt-4 flex flex-wrap gap-2 text-xs font-medium">
-        <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1">{{ location_hint }}</span>
-        <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1">{{ t('dashboard_tag_price') }}</span>
-        <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1">{{ t('dashboard_tag_stress') }}</span>
+<div class="dashboard-shell">
+  <aside class="dashboard-sidebar">
+    <div class="sidebar-card">
+      <p class="sidebar-title">{{ t('sidebar_title') }}</p>
+      <p class="sidebar-subtitle">{{ t('sidebar_subtitle') }}</p>
+      <div class="sidebar-user">
+        <span class="sidebar-avatar">AG</span>
+        <div>
+          <p class="sidebar-user-name">{{ username }}</p>
+          <p class="sidebar-user-role">{{ t('sidebar_user_role') }}</p>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+    <nav class="sidebar-nav">
+      <button class="sidebar-item is-active" data-section-target="crop">{{ t('nav_crop_prediction') }}</button>
+      <button class="sidebar-item" data-section-target="price">{{ t('nav_price_prediction') }}</button>
+      <button class="sidebar-item" data-section-target="weather">{{ t('nav_weather_alerts') }}</button>
+      <button class="sidebar-item" data-section-target="soil">{{ t('nav_soil_health') }}</button>
+      <button class="sidebar-item" data-section-target="irrigation">{{ t('nav_irrigation_schedule') }}</button>
+      <button class="sidebar-item" data-section-target="market">{{ t('nav_market_trends') }}</button>
+      <button class="sidebar-item" data-section-target="feedback">{{ t('nav_feedback') }}</button>
+    </nav>
+  </aside>
 
-<section class="mt-6 glass-card p-6">
-  <form method="post" action="/dashboard" id="recommendation-form" class="space-y-5">
-    <div class="grid gap-4 lg:grid-cols-3">
-      <div>
-        <label for="location" class="mb-1 block text-sm font-semibold text-slate-700">{{ t('dashboard_location_label') }}</label>
-        <div class="grid gap-2 xl:grid-cols-[1fr_auto_auto]">
-          <input id="location" name="location" type="text" required value="{{ input_location }}" placeholder="{{ t('location_placeholder') }}" class="w-full rounded-xl border border-brand-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand-200" />
-          <button type="button" id="use-live-location" class="rounded-xl bg-brand-100 px-4 py-3 text-sm font-semibold text-brand-800 hover:bg-brand-200 whitespace-nowrap">{{ t('use_live_location') }}</button>
+  <div class="dashboard-main">
+    <section class="dashboard-section is-active" data-section-panel="crop">
+      <section class="dashboard-hero px-6 py-10 shadow-soft-xl" style="background-image: url('/static/dash-bg.png');">
+        <div class="dashboard-hero-content">
+          <div>
+            <p class="text-xs tracking-widest font-semibold text-brand-50/90">{{ t('dashboard_kicker') }}</p>
+            <h2 class="font-display mt-2 text-3xl font-black">{{ t('dashboard_welcome') }}, {{ username }}</h2>
+            <p class="mt-2 text-brand-50/90">{{ t('dashboard_description') }}</p>
+            <div class="mt-4 flex flex-wrap gap-2 text-xs font-medium">
+              <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1">{{ location_hint }}</span>
+              <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1">{{ t('dashboard_tag_price') }}</span>
+              <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1">{{ t('dashboard_tag_stress') }}</span>
+            </div>
+          </div>
         </div>
-        <small id="location-status" class="mt-2 block text-xs text-slate-500">{{ t('location_status_hint') }}</small>
-      </div>
+      </section>
 
-      <div>
-        <label for="season" class="mb-1 block text-sm font-semibold text-slate-700">{{ t('dashboard_season_label') }}</label>
-        <select id="season" name="season" class="w-full rounded-xl border border-brand-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand-200">
-          <option value="Kharif" {% if selected_season == 'Kharif' %}selected{% endif %}>{{ t('season_kharif') }}</option>
-          <option value="Rabi" {% if selected_season == 'Rabi' %}selected{% endif %}>{{ t('season_rabi') }}</option>
-          <option value="Zaid" {% if selected_season == 'Zaid' %}selected{% endif %}>{{ t('season_zaid') }}</option>
+      <section class="mt-6 glass-card p-6">
+        <form method="post" action="/dashboard" id="recommendation-form" class="space-y-5">
+          <div class="grid gap-4 lg:grid-cols-3">
+            <div>
+              <label for="location" class="mb-1 block text-sm font-semibold text-slate-700">{{ t('dashboard_location_label') }}</label>
+              <div class="grid gap-2 xl:grid-cols-[1fr_auto]">
+                <input id="location" name="location" type="text" required value="{{ input_location }}" placeholder="{{ t('location_placeholder') }}" class="w-full rounded-xl border border-brand-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand-200" />
+                <button type="button" id="use-live-location" class="rounded-xl bg-brand-100 px-4 py-3 text-sm font-semibold text-brand-800 hover:bg-brand-200 whitespace-nowrap">{{ t('use_live_location') }}</button>
+              </div>
+              <small
+                id="location-status"
+                class="mt-2 block text-xs text-slate-500"
+                data-status-idle="{{ t('location_status_hint') }}"
+                data-status-detecting="{{ t('location_status_detecting') }}"
+                data-status-denied="{{ t('location_status_denied') }}"
+                data-status-error="{{ t('location_status_error') }}"
+                data-status-unsupported="{{ t('location_status_unsupported') }}"
+                data-status-resolved="{{ t('location_status_resolved') }}"
+              >{{ t('location_status_hint') }}</small>
+            </div>
+
+            <div>
+              <label for="season" class="mb-1 block text-sm font-semibold text-slate-700">{{ t('dashboard_season_label') }}</label>
+              <select id="season" name="season" class="w-full rounded-xl border border-brand-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand-200">
+                <option value="Kharif" {% if selected_season == 'Kharif' %}selected{% endif %}>{{ t('season_kharif') }}</option>
+                <option value="Rabi" {% if selected_season == 'Rabi' %}selected{% endif %}>{{ t('season_rabi') }}</option>
+                <option value="Zaid" {% if selected_season == 'Zaid' %}selected{% endif %}>{{ t('season_zaid') }}</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="crop_type" class="mb-1 block text-sm font-semibold text-slate-700">{{ t('dashboard_crop_label') }}</label>
+              <input id="crop_type" name="crop_type" type="text" value="{{ input_crop }}" placeholder="{{ t('crop_placeholder') }}" class="w-full rounded-xl border border-brand-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand-200" />
+            </div>
+          </div>
+          <button class="inline-flex rounded-xl bg-brand-600 px-5 py-3 text-sm font-bold text-white hover:bg-brand-700" type="submit">{{ t('get_recommendation') }}</button>
+        </form>
+      </section>
+
+      <section class="mt-6 glass-card p-6">
+        <div class="section-header">
+          <h2 class="section-title">{{ t('crop_snapshot_title') }}</h2>
+          <p class="section-subtitle">{{ t('crop_snapshot_subtitle') }}</p>
+        </div>
+        <div class="insight-grid">
+          <div class="insight-card">
+            <h3 class="insight-title">{{ t('crop_card_crop_title') }}</h3>
+            <p class="insight-text">{{ t('crop_card_crop_desc') }}</p>
+          </div>
+          <div class="insight-card">
+            <h3 class="insight-title">{{ t('crop_card_irrigation_title') }}</h3>
+            <p class="insight-text">{{ t('crop_card_irrigation_desc') }}</p>
+          </div>
+          <div class="insight-card">
+            <h3 class="insight-title">{{ t('crop_card_market_title') }}</h3>
+            <p class="insight-text">{{ t('crop_card_market_desc') }}</p>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="dashboard-section" data-section-panel="price">
+      <div class="section-header">
+        <h2 class="section-title">{{ t('price_title') }}</h2>
+        <p class="section-subtitle">{{ t('price_description') }}</p>
+      </div>
+      <div class="price-filters">
+        <input id="price-search" type="text" placeholder="{{ t('price_search_placeholder') }}" class="price-input" />
+        <select id="price-region" class="price-input">
+          <option value="all">{{ t('price_region_all') }}</option>
         </select>
+        <div class="price-category">
+          <button type="button" class="chip is-active" data-category="all">{{ t('price_category_all') }}</button>
+          <button type="button" class="chip" data-category="Vegetables">{{ t('price_category_vegetables') }}</button>
+          <button type="button" class="chip" data-category="Fruits">{{ t('price_category_fruits') }}</button>
+          <button type="button" class="chip" data-category="Leafy">{{ t('price_category_leafy') }}</button>
+          <button type="button" class="chip" data-category="Other">{{ t('price_category_other') }}</button>
+        </div>
       </div>
-
-      <div>
-        <label for="crop_type" class="mb-1 block text-sm font-semibold text-slate-700">{{ t('dashboard_crop_label') }}</label>
-        <input id="crop_type" name="crop_type" type="text" value="{{ input_crop }}" placeholder="{{ t('crop_placeholder') }}" class="w-full rounded-xl border border-brand-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand-200" />
-      </div>
-    </div>
-    <button class="inline-flex rounded-xl bg-brand-600 px-5 py-3 text-sm font-bold text-white hover:bg-brand-700" type="submit">{{ t('get_recommendation') }}</button>
-  </form>
-
-</section>
-
-{% if result %}
-  {% if result.top_crop_recommendations %}
-  <section class="mt-6 glass-card p-6">
-    <h3 class="text-xl font-bold text-brand-900">{{ t('top_crops') }}</h3>
-    <div class="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-      {% for item in result.top_crop_recommendations %}
-      <div class="rounded-2xl border border-brand-100 bg-brand-50/40 p-4">
-        <p class="text-xs text-slate-500">Rank {{ loop.index }}</p>
-        <h3 class="mt-1 text-base font-bold text-brand-900">{{ item.crop }}</h3>
-        <p class="mt-2 text-2xl font-black text-brand-700">{{ item.confidence_pct }}%</p>
-      </div>
-      {% endfor %}
-    </div>
-  </section>
-  {% endif %}
-
-  {% if result.all_crops_outlook %}
-  <section class="mt-6 glass-card p-6">
-    <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <h3 class="text-xl font-bold text-brand-900">Precision Crop & Market Navigator (All Crops)</h3>
-      <input id="crop-filter" type="text" placeholder="Search crop (e.g., Tomato, Rice, Spinach)" class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-200 sm:max-w-sm" />
-    </div>
-    <div class="overflow-x-auto rounded-2xl border border-brand-100">
-      <table id="all-crops-table" class="min-w-[960px] w-full border-collapse">
-        <thead class="bg-brand-50 text-left text-xs uppercase tracking-wide text-slate-600">
-          <tr class="border-b border-brand-100">
-            <th class="px-3 py-3">Crop</th>
-            <th class="px-3 py-3">Recommendation %</th>
-            <th class="px-3 py-3">Yield (ton/ha)</th>
-            <th class="px-3 py-3">Irrigation (mm)</th>
-            <th class="px-3 py-3">Expected Price (₹)</th>
-            <th class="px-3 py-3">Price Trend</th>
-            <th class="px-3 py-3">Stress Level</th>
-            <th class="px-3 py-3">Stress Index</th>
-          </tr>
-        </thead>
-        <tbody class="text-sm text-slate-700">
-          {% for item in result.all_crops_outlook %}
-          <tr class="border-b border-slate-100 hover:bg-brand-50/40">
-            <td class="px-3 py-2.5 font-semibold text-brand-900">{{ item.crop }}</td>
-            <td class="px-3 py-2.5">{{ item.recommendation_score_pct }}</td>
-            <td class="px-3 py-2.5">{{ item.expected_yield_ton_per_ha }}</td>
-            <td class="px-3 py-2.5">{{ item.irrigation_requirement_mm }}</td>
-            <td class="px-3 py-2.5">{{ item.expected_market_price }}</td>
-            <td class="px-3 py-2.5">{{ item.future_price_trend }}</td>
-            <td class="px-3 py-2.5">{{ item.water_stress_level }}</td>
-            <td class="px-3 py-2.5">{{ item.water_stress_index }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </section>
-  {% endif %}
-
-  <section class="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-    <div class="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm">
-      <p class="text-xs text-slate-500">🌾 Best Crop Recommendation</p>
-      <p class="mt-2 text-2xl font-black text-brand-800">{{ result.recommended_crop }}</p>
-    </div>
-    <div class="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm">
-      <p class="text-xs text-slate-500">📈 Expected Yield</p>
-      <p class="mt-2 text-2xl font-black text-brand-800">{{ result.expected_yield_ton_per_ha }} ton/ha</p>
-    </div>
-    <div class="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm">
-      <p class="text-xs text-slate-500">💧 Irrigation Requirement</p>
-      <p class="mt-2 text-2xl font-black text-brand-800">{{ result.irrigation_requirement_mm }} mm</p>
-    </div>
-    <div class="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm">
-      <p class="text-xs text-slate-500">💰 Expected Market Price</p>
-      <p class="mt-2 text-2xl font-black text-brand-800">₹ {{ result.expected_market_price }}</p>
-    </div>
-    <div class="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm">
-      <p class="text-xs text-slate-500">⚠ Climate Risk</p>
-      <p class="mt-2 text-2xl font-black text-brand-800">{{ result.climate_risk }}</p>
-    </div>
-    <div class="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm">
-      <p class="text-xs text-slate-500">🌡 Crop Water Stress</p>
-      <p class="mt-2 text-2xl font-black text-brand-800">{{ result.crop_water_stress_level }}</p>
-    </div>
-  </section>
-
-  {% if result.yield_insights and result.irrigation_insights %}
-  <section class="mt-6 glass-card p-6">
-    <div class="grid gap-6 lg:grid-cols-2">
-      <div>
-        <h3 class="text-xl font-bold text-brand-900">Yield Intelligence</h3>
-        <p class="mt-1 text-sm text-slate-500">Benchmark: {{ result.yield_insights.benchmark_scope }} history (n={{ result.yield_insights.sample_size }})</p>
-        <div class="mt-4 grid gap-3 sm:grid-cols-2">
-          <div class="rounded-2xl border border-brand-100 bg-brand-50/40 p-4">
-            <p class="text-xs text-slate-500">Historical Avg Yield</p>
-            <p class="mt-2 text-2xl font-black text-brand-800">{{ result.yield_insights.historical_avg_ton_per_ha }} ton/ha</p>
-          </div>
-          <div class="rounded-2xl border border-brand-100 bg-brand-50/40 p-4">
-            <p class="text-xs text-slate-500">Expected vs Avg</p>
-            <p class="mt-2 text-2xl font-black text-brand-800">{{ result.yield_insights.expected_vs_avg_pct }}%</p>
-            <p class="text-xs text-slate-500 mt-1">{{ result.yield_insights.outlook }}</p>
-          </div>
-          <div class="rounded-2xl border border-brand-100 bg-brand-50/40 p-4">
-            <p class="text-xs text-slate-500">Yield Range</p>
-            <p class="mt-2 text-lg font-black text-brand-800">{{ result.yield_insights.yield_range_ton_per_ha.low }} - {{ result.yield_insights.yield_range_ton_per_ha.high }} ton/ha</p>
-          </div>
-          <div class="rounded-2xl border border-brand-100 bg-brand-50/40 p-4">
-            <p class="text-xs text-slate-500">Yield Variability</p>
-            <p class="mt-2 text-2xl font-black text-brand-800">{{ result.yield_insights.historical_variability_ton_per_ha }} ton/ha</p>
+      <div class="price-layout">
+        <div id="price-grid" class="price-grid" data-last-year-label="{{ t('price_last_year') }}"></div>
+        <div id="price-detail" class="glass-card p-5 price-detail">
+          <p class="price-detail-kicker">{{ t('price_detail_title') }}</p>
+          <h3 id="price-detail-name" class="price-detail-name">-</h3>
+          <p id="price-detail-subtitle" class="price-detail-subtitle">{{ t('price_detail_subtitle') }}</p>
+          <div class="price-detail-list">
+            <div class="price-detail-row">
+              <span>{{ t('price_detail_current_label') }}</span>
+              <strong id="price-detail-current">-</strong>
+            </div>
+            <div class="price-detail-row">
+              <span>{{ t('price_detail_previous_label') }}</span>
+              <strong id="price-detail-previous">-</strong>
+            </div>
+            <div class="price-detail-row">
+              <span>{{ t('price_detail_region_label') }}</span>
+              <strong id="price-detail-region">-</strong>
+            </div>
+            <div class="price-detail-row">
+              <span>{{ t('price_detail_category_label') }}</span>
+              <strong id="price-detail-category">-</strong>
+            </div>
           </div>
         </div>
       </div>
-      <div>
-        <h3 class="text-xl font-bold text-brand-900">Irrigation Advisory</h3>
-        <p class="mt-1 text-sm text-slate-500">Water stress index: {{ result.irrigation_insights.stress_index }}</p>
-        <div class="mt-4 grid gap-3 sm:grid-cols-2">
-          <div class="rounded-2xl border border-brand-100 bg-brand-50/40 p-4">
-            <p class="text-xs text-slate-500">Net Irrigation Needed</p>
-            <p class="mt-2 text-2xl font-black text-brand-800">{{ result.irrigation_insights.net_irrigation_mm }} mm</p>
-            <p class="text-xs text-slate-500 mt-1">~{{ result.irrigation_insights.net_irrigation_l_per_ha }} L/ha</p>
-          </div>
-          <div class="rounded-2xl border border-brand-100 bg-brand-50/40 p-4">
-            <p class="text-xs text-slate-500">Rainfall Contribution</p>
-            <p class="mt-2 text-2xl font-black text-brand-800">{{ result.irrigation_insights.rainfall_contribution_mm }} mm</p>
-            <p class="text-xs text-slate-500 mt-1">~{{ result.irrigation_insights.rainfall_l_per_ha }} L/ha</p>
-          </div>
-          <div class="rounded-2xl border border-brand-100 bg-brand-50/40 p-4">
-            <p class="text-xs text-slate-500">Weekly Plan</p>
-            <p class="mt-2 text-lg font-black text-brand-800">{{ result.irrigation_insights.weekly_irrigation_mm }} mm/week</p>
-            <p class="text-xs text-slate-500 mt-1">{{ result.irrigation_insights.events_per_week }} events, {{ result.irrigation_insights.per_event_mm }} mm each</p>
-          </div>
-          <div class="rounded-2xl border border-brand-100 bg-brand-50/40 p-4">
-            <p class="text-xs text-slate-500">Water Demand Coverage</p>
-            <p class="mt-2 text-lg font-black text-brand-800">{{ result.irrigation_insights.irrigation_to_demand_pct }}%</p>
-            <p class="text-xs text-slate-500 mt-1">Baseline demand {{ result.irrigation_insights.water_demand_mm }} mm</p>
-          </div>
+    </section>
+
+    <section class="dashboard-section" data-section-panel="weather">
+      <div class="section-header">
+        <h2 class="section-title">{{ t('weather_title') }}</h2>
+        <p class="section-subtitle">{{ t('weather_description') }}</p>
+      </div>
+      <div class="info-grid">
+        <div class="info-card">
+          <h3>{{ t('weather_card_drought_title') }}</h3>
+          <p>{{ t('weather_card_drought_desc') }}</p>
         </div>
-        <div class="mt-4 rounded-2xl border border-brand-200 bg-brand-50/60 p-4 text-sm text-slate-700">
-          <strong>Advisory:</strong> {{ result.irrigation_insights.advisory }}
+        <div class="info-card">
+          <h3>{{ t('weather_card_rain_title') }}</h3>
+          <p>{{ t('weather_card_rain_desc') }}</p>
+        </div>
+        <div class="info-card">
+          <h3>{{ t('weather_card_temp_title') }}</h3>
+          <p>{{ t('weather_card_temp_desc') }}</p>
         </div>
       </div>
-    </div>
-  </section>
-  {% endif %}
+    </section>
 
-  <section class="mt-6 rounded-3xl border border-brand-100 bg-white p-6 shadow-soft-xl">
-    <h3 class="text-xl font-bold text-brand-900">{{ t('weather_snapshot') }}</h3>
-    <div class="mt-4 grid gap-3 md:grid-cols-3">
-      <div class="rounded-2xl bg-brand-50/40 p-4 border border-brand-100"><p class="text-xs text-slate-500">Temperature</p><p class="mt-2 text-2xl font-black text-brand-800">{{ result.weather.temperature_c }} °C</p></div>
-      <div class="rounded-2xl bg-brand-50/40 p-4 border border-brand-100"><p class="text-xs text-slate-500">Rainfall</p><p class="mt-2 text-2xl font-black text-brand-800">{{ result.weather.rainfall_mm }} mm</p></div>
-      <div class="rounded-2xl bg-brand-50/40 p-4 border border-brand-100"><p class="text-xs text-slate-500">Humidity</p><p class="mt-2 text-2xl font-black text-brand-800">{{ result.weather.humidity_pct }} %</p></div>
-    </div>
-  </section>
+    <section class="dashboard-section" data-section-panel="soil">
+      <div class="section-header">
+        <h2 class="section-title">{{ t('soil_title') }}</h2>
+        <p class="section-subtitle">{{ t('soil_description') }}</p>
+      </div>
+      <div class="info-grid">
+        <div class="info-card">
+          <h3>{{ t('soil_card_ph_title') }}</h3>
+          <p>{{ t('soil_card_ph_desc') }}</p>
+        </div>
+        <div class="info-card">
+          <h3>{{ t('soil_card_moisture_title') }}</h3>
+          <p>{{ t('soil_card_moisture_desc') }}</p>
+        </div>
+        <div class="info-card">
+          <h3>{{ t('soil_card_fertility_title') }}</h3>
+          <p>{{ t('soil_card_fertility_desc') }}</p>
+        </div>
+      </div>
+    </section>
 
-  <section class="mt-6 glass-card p-5 text-sm leading-relaxed text-slate-700">
-    <strong>{{ t('explanation') }}</strong><br />
-    {{ result.explanation }}
-  </section>
-{% endif %}
+    <section class="dashboard-section" data-section-panel="irrigation">
+      <div class="section-header">
+        <h2 class="section-title">{{ t('irrigation_title') }}</h2>
+        <p class="section-subtitle">{{ t('irrigation_description') }}</p>
+      </div>
+      <div class="info-grid">
+        <div class="info-card">
+          <h3>{{ t('irrigation_card_weekly_title') }}</h3>
+          <p>{{ t('irrigation_card_weekly_desc') }}</p>
+        </div>
+        <div class="info-card">
+          <h3>{{ t('irrigation_card_method_title') }}</h3>
+          <p>{{ t('irrigation_card_method_desc') }}</p>
+        </div>
+        <div class="info-card">
+          <h3>{{ t('irrigation_card_alert_title') }}</h3>
+          <p>{{ t('irrigation_card_alert_desc') }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-section" data-section-panel="market">
+      <div class="section-header">
+        <h2 class="section-title">{{ t('market_title') }}</h2>
+        <p class="section-subtitle">{{ t('market_description') }}</p>
+      </div>
+      <div class="info-grid">
+        <div class="info-card">
+          <h3>{{ t('market_card_price_title') }}</h3>
+          <p>{{ t('market_card_price_desc') }}</p>
+        </div>
+        <div class="info-card">
+          <h3>{{ t('market_card_demand_title') }}</h3>
+          <p>{{ t('market_card_demand_desc') }}</p>
+        </div>
+        <div class="info-card">
+          <h3>{{ t('market_card_export_title') }}</h3>
+          <p>{{ t('market_card_export_desc') }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-section" data-section-panel="feedback">
+      <div class="section-header">
+        <h2 class="section-title">{{ t('feedback_title') }}</h2>
+        <p class="section-subtitle">{{ t('feedback_description') }}</p>
+      </div>
+      <div class="glass-card p-6">
+        <form id="feedback-form" class="space-y-4">
+          <div>
+            <label class="mb-1 block text-sm font-semibold text-slate-700" for="feedback-name">{{ t('feedback_name_label') }}</label>
+            <input id="feedback-name" type="text" class="w-full rounded-xl border border-brand-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand-200" placeholder="{{ t('feedback_name_placeholder') }}" />
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-semibold text-slate-700" for="feedback-rating">{{ t('feedback_rating_label') }}</label>
+            <select id="feedback-rating" class="w-full rounded-xl border border-brand-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand-200">
+              <option value="">{{ t('feedback_rating_placeholder') }}</option>
+              <option value="5">5</option>
+              <option value="4">4</option>
+              <option value="3">3</option>
+              <option value="2">2</option>
+              <option value="1">1</option>
+            </select>
+          </div>
+          <div>
+            <label class="mb-1 block text-sm font-semibold text-slate-700" for="feedback-message">{{ t('feedback_message_label') }}</label>
+            <textarea id="feedback-message" rows="4" class="w-full rounded-xl border border-brand-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand-200" placeholder="{{ t('feedback_message_placeholder') }}"></textarea>
+          </div>
+          <button type="submit" class="inline-flex rounded-xl bg-brand-700 px-5 py-3 text-sm font-bold text-white hover:bg-brand-800">{{ t('feedback_submit') }}</button>
+        </form>
+        <div id="feedback-success" class="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700" hidden>
+          {{ t('feedback_success') }}
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script>
   window.resolveLocationUrl = "/resolve-location";
 </script>
-<script
-  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-  crossorigin=""
-></script>
 <script src="/static/dashboard.js"></script>
 {% endblock %}

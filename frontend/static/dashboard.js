@@ -1,170 +1,254 @@
-(() => {
-  const liveButton = document.getElementById("use-live-location");
-  const mapButton = document.getElementById("pick-on-map");
-  const closeMapButton = document.getElementById("close-map");
-  const mapPanel = document.getElementById("map-panel");
-  const useMapPointButton = document.getElementById("use-map-point");
-  const mapContainer = document.getElementById("location-map");
-  const locationInput = document.getElementById("location");
-  const locationStatus = document.getElementById("location-status");
-  const cropFilterInput = document.getElementById("crop-filter");
-  const allCropsTable = document.getElementById("all-crops-table");
+(function () {
+  const sectionButtons = Array.from(document.querySelectorAll("[data-section-target]"));
+  const sections = Array.from(document.querySelectorAll("[data-section-panel]"));
 
-  if (!liveButton || !locationInput || !locationStatus) {
-    return;
+  const activateSection = (target) => {
+    sections.forEach((section) => {
+      section.classList.toggle("is-active", section.dataset.sectionPanel === target);
+    });
+    sectionButtons.forEach((button) => {
+      button.classList.toggle("is-active", button.dataset.sectionTarget === target);
+    });
+  };
+
+  sectionButtons.forEach((button) => {
+    button.addEventListener("click", () => activateSection(button.dataset.sectionTarget));
+  });
+
+  if (sectionButtons.length) {
+    activateSection(sectionButtons[0].dataset.sectionTarget);
   }
 
-  let mapRef = null;
-  let markerRef = null;
-  let selectedPoint = null;
+  const locationInput = document.getElementById("location");
+  const locationStatus = document.getElementById("location-status");
+  const liveLocationButton = document.getElementById("use-live-location");
 
-  const setStatus = (message, type = "") => {
-    locationStatus.textContent = message;
-    locationStatus.classList.remove("text-slate-500", "text-emerald-700", "text-rose-700");
-    if (type === "ok") {
-      locationStatus.classList.add("text-emerald-700");
-      return;
-    }
-    if (type === "error") {
-      locationStatus.classList.add("text-rose-700");
-      return;
-    }
-    locationStatus.classList.add("text-slate-500");
-  };
-
-  const resolveLocation = async (lat, lon) => {
-    const resolveUrl = window.resolveLocationUrl;
-    if (!resolveUrl) {
-      throw new Error("Location resolver is not configured.");
-    }
-
-    const params = new URLSearchParams({
-      lat: String(lat),
-      lon: String(lon),
-    });
-
-    const response = await fetch(`${resolveUrl}?${params.toString()}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Could not resolve your location.");
-    }
-
-    return response.json();
-  };
-
-  const openMap = () => {
-    if (!mapPanel || !mapContainer || typeof L === "undefined") {
-      setStatus("Map component could not be loaded.", "error");
-      return;
-    }
-
-    mapPanel.hidden = false;
-
-    if (!mapRef) {
-      mapRef = L.map("location-map").setView([18.52, 73.85], 6);
-
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 18,
-        attribution: "&copy; OpenStreetMap contributors",
-      }).addTo(mapRef);
-
-      mapRef.on("click", (event) => {
-        const { lat, lng } = event.latlng;
-        selectedPoint = { lat, lon: lng };
-
-        if (markerRef) {
-          markerRef.setLatLng(event.latlng);
-        } else {
-          markerRef = L.marker(event.latlng).addTo(mapRef);
-        }
-
-        setStatus(`Selected map point: ${lat.toFixed(4)}, ${lng.toFixed(4)}`);
-      });
-    }
-
-    setTimeout(() => mapRef.invalidateSize(), 180);
-  };
-
-  const closeMap = () => {
-    if (mapPanel) {
-      mapPanel.hidden = true;
-    }
-  };
-
-  liveButton.addEventListener("click", async () => {
-    if (!navigator.geolocation) {
-      setStatus("Geolocation is not supported in this browser.", "error");
-      return;
-    }
-
-    setStatus("Detecting your location...");
-    liveButton.disabled = true;
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const { latitude, longitude } = position.coords;
-          const payload = await resolveLocation(latitude, longitude);
-          locationInput.value = payload.location || `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-          setStatus(`Live location detected: ${locationInput.value}`, "ok");
-        } catch (error) {
-          setStatus(error.message || "Unable to resolve live location.", "error");
-        } finally {
-          liveButton.disabled = false;
-        }
-      },
-      () => {
-        setStatus("Location permission denied. Enter location manually.", "error");
-        liveButton.disabled = false;
-      },
-      {
-        timeout: 10000,
-        enableHighAccuracy: true,
+  const statusText = locationStatus
+    ? {
+        idle: locationStatus.dataset.statusIdle,
+        detecting: locationStatus.dataset.statusDetecting,
+        denied: locationStatus.dataset.statusDenied,
+        error: locationStatus.dataset.statusError,
+        unsupported: locationStatus.dataset.statusUnsupported,
+        resolved: locationStatus.dataset.statusResolved,
       }
-    );
-  });
+    : {};
 
-  mapButton?.addEventListener("click", () => {
-    openMap();
-  });
-
-  closeMapButton?.addEventListener("click", () => {
-    closeMap();
-  });
-
-  useMapPointButton?.addEventListener("click", async () => {
-    if (!selectedPoint) {
-      setStatus("Tap on the map to select a point first.", "error");
-      return;
+  const setLocationStatus = (key, tone) => {
+    if (!locationStatus) return;
+    locationStatus.textContent = statusText[key] || key;
+    locationStatus.classList.remove("text-emerald-600", "text-rose-600", "text-slate-500");
+    if (tone === "success") {
+      locationStatus.classList.add("text-emerald-600");
+    } else if (tone === "error") {
+      locationStatus.classList.add("text-rose-600");
+    } else {
+      locationStatus.classList.add("text-slate-500");
     }
+  };
 
-    try {
-      setStatus("Resolving selected map point...");
-      useMapPointButton.disabled = true;
-      const payload = await resolveLocation(selectedPoint.lat, selectedPoint.lon);
-      locationInput.value = payload.location || `${selectedPoint.lat.toFixed(4)}, ${selectedPoint.lon.toFixed(4)}`;
-      setStatus(`Map location selected: ${locationInput.value}`, "ok");
-      closeMap();
-    } catch (error) {
-      setStatus(error.message || "Could not resolve selected map point.", "error");
-    } finally {
-      useMapPointButton.disabled = false;
-    }
-  });
+  const resolveLocationName = async (latitude, longitude) => {
+    if (!window.resolveLocationUrl) return null;
+    const response = await fetch(`${window.resolveLocationUrl}?lat=${latitude}&lon=${longitude}`);
+    if (!response.ok) return null;
+    const data = await response.json();
+    return data.location || null;
+  };
 
-  if (cropFilterInput && allCropsTable) {
-    cropFilterInput.addEventListener("input", () => {
-      const query = cropFilterInput.value.trim().toLowerCase();
-      const rows = Array.from(allCropsTable.querySelectorAll("tbody tr"));
-      rows.forEach((row) => {
-        const cropName = (row.children[0]?.textContent || "").toLowerCase();
-        row.style.display = cropName.includes(query) ? "" : "none";
+  if (liveLocationButton) {
+    liveLocationButton.addEventListener("click", () => {
+      if (!navigator.geolocation) {
+        setLocationStatus("unsupported", "error");
+        return;
+      }
+      setLocationStatus("detecting", "info");
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          const resolved = await resolveLocationName(latitude, longitude);
+          if (resolved && locationInput) {
+            locationInput.value = resolved;
+            setLocationStatus("resolved", "success");
+          } else {
+            setLocationStatus("error", "error");
+          }
+        },
+        () => {
+          setLocationStatus("denied", "error");
+        },
+        { timeout: 10000 }
+      );
+    });
+  }
+
+  const priceGrid = document.getElementById("price-grid");
+  if (priceGrid) {
+    const priceDetail = {
+      name: document.getElementById("price-detail-name"),
+      subtitle: document.getElementById("price-detail-subtitle"),
+      current: document.getElementById("price-detail-current"),
+      previous: document.getElementById("price-detail-previous"),
+      region: document.getElementById("price-detail-region"),
+      category: document.getElementById("price-detail-category"),
+    };
+    const defaultDetailSubtitle = priceDetail.subtitle ? priceDetail.subtitle.textContent : "";
+    const searchInput = document.getElementById("price-search");
+    const regionSelect = document.getElementById("price-region");
+    const categoryButtons = Array.from(document.querySelectorAll("[data-category]"));
+
+    const regionList = [
+      "Andhra Pradesh",
+      "Arunachal Pradesh",
+      "Assam",
+      "Bihar",
+      "Chhattisgarh",
+      "Goa",
+      "Gujarat",
+      "Haryana",
+      "Himachal Pradesh",
+      "Jharkhand",
+      "Karnataka",
+      "Kerala",
+      "Madhya Pradesh",
+      "Maharashtra",
+      "Manipur",
+      "Meghalaya",
+      "Mizoram",
+      "Nagaland",
+      "Odisha",
+      "Punjab",
+      "Rajasthan",
+      "Sikkim",
+      "Tamil Nadu",
+      "Telangana",
+      "Tripura",
+      "Uttar Pradesh",
+      "Uttarakhand",
+      "West Bengal",
+      "Andaman and Nicobar Islands",
+      "Chandigarh",
+      "Dadra and Nagar Haveli and Daman and Diu",
+      "Delhi",
+      "Jammu and Kashmir",
+      "Ladakh",
+      "Lakshadweep",
+      "Puducherry",
+    ];
+
+    if (regionSelect) {
+      regionList.forEach((region) => {
+        const option = document.createElement("option");
+        option.value = region;
+        option.textContent = region;
+        regionSelect.appendChild(option);
       });
+    }
+
+    const priceData = [
+      { crop: "Tomato", category: "Vegetables", region: "Maharashtra", price: 28, previous: 24, unit: "kg" },
+      { crop: "Onion", category: "Vegetables", region: "Gujarat", price: 32, previous: 30, unit: "kg" },
+      { crop: "Potato", category: "Vegetables", region: "Uttar Pradesh", price: 26, previous: 25, unit: "kg" },
+      { crop: "Okra", category: "Vegetables", region: "Telangana", price: 34, previous: 31, unit: "kg" },
+      { crop: "Apple", category: "Fruits", region: "Himachal Pradesh", price: 110, previous: 98, unit: "kg" },
+      { crop: "Banana", category: "Fruits", region: "Tamil Nadu", price: 46, previous: 41, unit: "kg" },
+      { crop: "Mango", category: "Fruits", region: "Andhra Pradesh", price: 75, previous: 70, unit: "kg" },
+      { crop: "Grapes", category: "Fruits", region: "Maharashtra", price: 88, previous: 82, unit: "kg" },
+      { crop: "Spinach", category: "Leafy", region: "Punjab", price: 22, previous: 19, unit: "kg" },
+      { crop: "Coriander", category: "Leafy", region: "Karnataka", price: 18, previous: 16, unit: "kg" },
+      { crop: "Rice", category: "Other", region: "West Bengal", price: 32, previous: 30, unit: "kg" },
+      { crop: "Wheat", category: "Other", region: "Rajasthan", price: 29, previous: 27, unit: "kg" },
+      { crop: "Maize", category: "Other", region: "Bihar", price: 24, previous: 22, unit: "kg" },
+    ];
+
+    let activeCategory = "all";
+
+    const formatPrice = (value, unit) => `Rs ${value}/${unit}`;
+
+    const updateDetail = (item) => {
+      if (!item) return;
+      if (priceDetail.name) priceDetail.name.textContent = item.crop;
+      if (priceDetail.subtitle) {
+        priceDetail.subtitle.textContent = `${item.category} - ${item.region}`;
+      }
+      if (priceDetail.current) priceDetail.current.textContent = formatPrice(item.price, item.unit);
+      if (priceDetail.previous) priceDetail.previous.textContent = formatPrice(item.previous, item.unit);
+      if (priceDetail.region) priceDetail.region.textContent = item.region;
+      if (priceDetail.category) priceDetail.category.textContent = item.category;
+    };
+
+    const clearDetail = () => {
+      if (priceDetail.name) priceDetail.name.textContent = "-";
+      if (priceDetail.subtitle) priceDetail.subtitle.textContent = defaultDetailSubtitle;
+      if (priceDetail.current) priceDetail.current.textContent = "-";
+      if (priceDetail.previous) priceDetail.previous.textContent = "-";
+      if (priceDetail.region) priceDetail.region.textContent = "-";
+      if (priceDetail.category) priceDetail.category.textContent = "-";
+    };
+
+    const renderPrices = () => {
+      const query = searchInput ? searchInput.value.trim().toLowerCase() : "";
+      const region = regionSelect ? regionSelect.value : "all";
+      const filtered = priceData.filter((item) => {
+        const matchesCategory = activeCategory === "all" || item.category === activeCategory;
+        const matchesRegion = region === "all" || item.region === region;
+        const matchesQuery = !query || item.crop.toLowerCase().includes(query);
+        return matchesCategory && matchesRegion && matchesQuery;
+      });
+      const lastYearLabel = priceGrid.dataset.lastYearLabel || "last year";
+
+      priceGrid.innerHTML = "";
+      if (!filtered.length) {
+        clearDetail();
+        return;
+      }
+
+      filtered.forEach((item) => {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "price-card";
+        card.innerHTML = `
+          <div class="price-card-header">
+            <h4 class="price-card-title">${item.crop}</h4>
+            <span class="price-card-tag">${item.category}</span>
+          </div>
+          <p class="price-card-price">${formatPrice(item.price, item.unit)}</p>
+          <p class="price-card-meta">${item.region} - ${formatPrice(item.previous, item.unit)} ${lastYearLabel}</p>
+        `;
+        card.addEventListener("click", () => updateDetail(item));
+        priceGrid.appendChild(card);
+      });
+
+      updateDetail(filtered[0]);
+    };
+
+    categoryButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        activeCategory = button.dataset.category;
+        categoryButtons.forEach((btn) => btn.classList.toggle("is-active", btn === button));
+        renderPrices();
+      });
+    });
+
+    if (searchInput) {
+      searchInput.addEventListener("input", renderPrices);
+    }
+    if (regionSelect) {
+      regionSelect.addEventListener("change", renderPrices);
+    }
+
+    renderPrices();
+  }
+
+  const feedbackForm = document.getElementById("feedback-form");
+  const feedbackSuccess = document.getElementById("feedback-success");
+  if (feedbackForm && feedbackSuccess) {
+    feedbackForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      feedbackForm.reset();
+      feedbackSuccess.hidden = false;
+      window.setTimeout(() => {
+        feedbackSuccess.hidden = true;
+      }, 2500);
     });
   }
 })();
