@@ -1,0 +1,50 @@
+ .env.example                                    |   38 [32m+[m[31m-[m
+ datafile (1).csv                                |   50 [31m-[m
+ datafile (2).csv                                |   56 [31m-[m
+ datafile (3).csv                                |   79 [31m--[m
+ datafile.csv                                    |   14 [31m-[m
+ download.csv                                    |    0
+ frontend/static/dash-bg.png                     |  Bin [31m355414[m -> [32m0[m bytes
+ frontend/static/dashboard.js                    | 1117 [32m++++++++++++[m[31m-----[m
+ frontend/static/hero-1.png                      |  Bin [31m1365004[m -> [32m0[m bytes
+ frontend/static/hero-2.png                      |  Bin [31m1197335[m -> [32m0[m bytes
+ frontend/static/login-bg.png                    |  Bin [31m1169325[m -> [32m0[m bytes
+ frontend/static/model_dashboard.js              |  106 [31m--[m
+ frontend/static/signup-bg.png                   |  Bin [31m777494[m -> [32m0[m bytes
+ frontend/static/style.css                       | 1512 [32m+++++++++++++++++++++[m[31m--[m
+ frontend/templates/base.html                    |    6 [32m+[m[31m-[m
+ frontend/templates/dashboard.html               |  827 [32m+++++++++[m[31m----[m
+ frontend/templates/landing.html                 |    4 [32m+[m[31m-[m
+ frontend/templates/login.html                   |    4 [32m+[m[31m-[m
+ frontend/templates/model_dashboard.html         |   64 [31m-[m
+ frontend/templates/signup.html                  |    4 [32m+[m[31m-[m
+ ml_service/app.py                               |  527 [32m++++++[m[31m--[m
+ ml_service/requirements.txt                     |   11 [32m+[m[31m-[m
+ package-lock.json                               |  224 [32m+++[m[31m-[m
+ produce.csv                                     |  430 [31m-------[m
+ server.js                                       |    5 [32m+[m[31m-[m
+ server/config.js                                |   55 [32m+[m[31m-[m
+ server/controllers/cropPredictionController.js  |   41 [31m-[m
+ server/controllers/irrigationController.js      |   34 [32m+[m[31m-[m
+ server/controllers/marketTrendsController.js    |   19 [31m-[m
+ server/controllers/pricePredictionController.js |   23 [31m-[m
+ server/controllers/soilHealthController.js      |   22 [31m-[m
+ server/routes/cropPrediction.js                 |    9 [31m-[m
+ server/routes/index.js                          |   34 [32m+[m[31m-[m
+ server/routes/irrigation.js                     |   12 [32m+[m[31m-[m
+ server/routes/marketTrends.js                   |    9 [31m-[m
+ server/routes/pricePrediction.js                |    9 [31m-[m
+ server/routes/soilHealth.js                     |    9 [31m-[m
+ server/services/agmarknetService.js             |   40 [31m-[m
+ server/services/cropPredictionService.js        |  103 [31m--[m
+ server/services/datasetService.js               |   27 [31m-[m
+ server/services/db.js                           |   92 [32m+[m[31m-[m
+ server/services/irrigationService.js            |  237 [32m+++[m[31m-[m
+ server/services/marketTrendsService.js          |   65 [31m-[m
+ server/services/nasaPowerService.js             |   23 [31m-[m
+ server/services/pricePredictionService.js       |  103 [31m--[m
+ server/services/pythonMlService.js              |  124 [32m+[m[31m-[m
+ server/services/soilHealthGovService.js         |   36 [31m-[m
+ server/services/weatherAlertsService.js         |   78 [32m+[m[31m-[m
+ server/services/weatherService.js               |  175 [32m++[m[31m-[m
+ 49 files changed, 4215 insertions(+), 2242 deletions(-)

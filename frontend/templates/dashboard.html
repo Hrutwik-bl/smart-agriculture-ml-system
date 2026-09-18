@@ -2,265 +2,666 @@
 
 {% block content %}
 <div class="dashboard-shell">
-  <aside class="dashboard-sidebar">
-    <div class="sidebar-card">
-      <p class="sidebar-title">{{ t('sidebar_title') }}</p>
-      <p class="sidebar-subtitle">{{ t('sidebar_subtitle') }}</p>
-      <div class="sidebar-user">
-        <span class="sidebar-avatar">AG</span>
+  <div class="dashboard-reference-shell">
+
+    <!-- ── Sidebar ──────────────────────────────────────────────── -->
+    <aside class="dashboard-side-panel">
+      <div class="side-brand">
+        <div class="side-brand-mark">🌾</div>
         <div>
-          <p class="sidebar-user-name">{{ username }}</p>
-          <p class="sidebar-user-role">{{ t('sidebar_user_role') }}</p>
+          <div class="side-brand-title">Smart Irrigation</div>
+          <div class="side-brand-sub">Precision Agriculture</div>
         </div>
       </div>
-    </div>
-    <nav class="sidebar-nav">
-      <button type="button" class="sidebar-item is-active" data-section-target="crop">{{ t('nav_crop_prediction') }}</button>
-      <button type="button" class="sidebar-item" data-section-target="price">{{ t('nav_price_prediction') }}</button>
-      <button type="button" class="sidebar-item" data-section-target="weather">{{ t('nav_weather_alerts') }}</button>
-      <button type="button" class="sidebar-item" data-section-target="soil">{{ t('nav_soil_health') }}</button>
-      <button type="button" class="sidebar-item" data-section-target="irrigation">{{ t('nav_irrigation_schedule') }}</button>
-      <button type="button" class="sidebar-item" data-section-target="market">{{ t('nav_market_trends') }}</button>
-      <button type="button" class="sidebar-item" data-section-target="feedback">{{ t('nav_feedback') }}</button>
-    </nav>
-  </aside>
 
-  <div class="dashboard-main">
-    <section class="dashboard-section is-active" data-section-panel="crop">
-      <section class="dashboard-hero px-6 py-10 shadow-soft-xl" style="background-image: url('/static/dash-bg.png');">
-        <div class="dashboard-hero-content">
-          <div>
-            <p class="text-xs tracking-widest font-semibold text-brand-50/90">{{ t('dashboard_kicker') }}</p>
-            <h2 class="font-display mt-2 text-3xl font-black">{{ t('dashboard_welcome') }}, {{ username }}</h2>
-            <p class="mt-2 text-brand-50/90">{{ t('dashboard_description') }}</p>
-            <div class="mt-4 flex flex-wrap gap-2 text-xs font-medium">
-              <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1">{{ location_hint }}</span>
-              <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1">{{ t('dashboard_tag_price') }}</span>
-              <span class="rounded-full border border-white/20 bg-white/10 px-3 py-1">{{ t('dashboard_tag_stress') }}</span>
+      <nav class="side-menu">
+        <button type="button" class="side-menu-item active" data-section-target="dashboard">📊 Dashboard</button>
+        <button type="button" class="side-menu-item" data-section-target="monitoring">📡 Live Monitoring</button>
+        <button type="button" class="side-menu-item" data-section-target="irrigation">🚿 Irrigation</button>
+        <button type="button" class="side-menu-item" data-section-target="nutrient">🌱 Nutrient &amp; Fertilizer</button>
+        <button type="button" class="side-menu-item" data-section-target="weather-alerts">⛅ Weather</button>
+        <button type="button" class="side-menu-item" data-section-target="history">📈 History &amp; Analytics</button>
+        <button type="button" class="side-menu-item" data-section-target="other-alerts">🔔 Alerts</button>
+        <button type="button" class="side-menu-item" data-section-target="settings">⚙ Settings</button>
+        <button type="button" class="side-menu-item" data-section-target="logout">↩ Logout</button>
+      </nav>
+
+      <div class="side-status-card">
+        <div class="side-status-label">System Status</div>
+        <div class="side-status-pill" id="system-mode">AUTO MODE</div>
+        <div class="side-status-foot">Last Updated<br><strong id="last-updated">—</strong></div>
+      </div>
+    </aside>
+
+    <!-- ── Main content ─────────────────────────────────────────── -->
+    <main class="dashboard-content-panel">
+
+      <!-- ════════════════════════════════════════════════════════
+           SECTION: Dashboard Overview
+      ══════════════════════════════════════════════════════════ -->
+      <section class="content-panel-section is-active" data-section-panel="dashboard">
+
+        <div class="dashboard-hero-panel">
+          <div class="dashboard-hero-content">
+            <div class="dashboard-hero-kicker">SMART PADDY IRRIGATION SYSTEM</div>
+            <h2>Welcome, {{ session.username or 'Farmer' }}</h2>
+            <p>Monitor your paddy field, get AI-powered irrigation decisions, and track NPK fertilizer status in real-time.</p>
+            <div class="dashboard-hero-actions">
+              <button type="button" class="hero-action primary" onclick="activateSection('monitoring')">📡 Live Sensors</button>
+              <button type="button" class="hero-action secondary" onclick="activateSection('irrigation')">💧 Irrigation Plan</button>
+              <button type="button" class="hero-action secondary" onclick="activateSection('nutrient')">🌱 Fertilizer Advice</button>
             </div>
           </div>
         </div>
-      </section>
 
-      <section class="mt-6 glass-card p-6">
-        <form method="post" action="/dashboard" id="recommendation-form" class="space-y-5">
-          <div class="grid gap-4 lg:grid-cols-3">
-            <div>
-              <label for="location" class="mb-1 block text-sm font-semibold text-slate-700">{{ t('dashboard_location_label') }}</label>
-              <div class="grid gap-2 xl:grid-cols-[1fr_auto]">
-                <input id="location" name="location" type="text" required value="{{ input_location }}" placeholder="{{ t('location_placeholder') }}" class="w-full rounded-xl border border-brand-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand-200" />
-                <button type="button" id="use-live-location" class="rounded-xl bg-brand-100 px-4 py-3 text-sm font-semibold text-brand-800 hover:bg-brand-200 whitespace-nowrap">{{ t('use_live_location') }}</button>
+        <!-- Top bar -->
+        <header class="top-bar">
+          <div class="top-bar-greeting">
+            <h2>Welcome back, {{ session.username or 'Farmer' }}!</h2>
+            <p>Here's your paddy field overview.</p>
+          </div>
+          <div class="top-bar-meta">
+            <div class="meta-pill" id="db-weather-location">—</div>
+            <div class="meta-pill temp-pill" id="db-weather-summary">—</div>
+            <div class="alert-badge" id="db-alert-count" title="Active alerts">0</div>
+            <div class="farmer-chip">👩‍🌾 {{ session.username or 'Farmer' }}</div>
+            <div class="farmer-chip online" id="db-device-status">—</div>
+          </div>
+        </header>
+
+        <!-- Field filters -->
+        <div class="filter-row">
+          <div class="filter-field">
+            <span class="filter-label">Crop</span>
+            <div class="filter-value">🌾 Paddy (Rice)</div>
+          </div>
+          <div class="filter-field">
+            <span class="filter-label">Growth Stage</span>
+            <div class="filter-value" id="db-growth-stage">—</div>
+          </div>
+          <div class="filter-field">
+            <span class="filter-label">Field</span>
+            <div class="filter-value" id="db-field-name">—</div>
+          </div>
+        </div>
+
+        <!-- KPI sensor cards -->
+        <div class="kpi-grid">
+          <div class="metric-card">
+            <div class="metric-icon blue">💧</div>
+            <div class="metric-body">
+              <div class="metric-title">Soil Moisture</div>
+              <div class="metric-value" id="sensor-soil-moisture">—</div>
+              <div class="metric-status" id="sensor-soil-moisture-status"><span class="dot dot-muted"></span> Optimal: 40–70%</div>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon orange">🌡</div>
+            <div class="metric-body">
+              <div class="metric-title">Temperature</div>
+              <div class="metric-value" id="sensor-temperature">—</div>
+              <div class="metric-status" id="sensor-temperature-status"><span class="dot dot-muted"></span> Optimal: 20–35°C</div>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon cyan">💦</div>
+            <div class="metric-body">
+              <div class="metric-title">Humidity</div>
+              <div class="metric-value" id="sensor-humidity">—</div>
+              <div class="metric-status" id="sensor-humidity-status"><span class="dot dot-muted"></span> Optimal: 60–85%</div>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon slate">🌧</div>
+            <div class="metric-body">
+              <div class="metric-title">Rainfall (24 h)</div>
+              <div class="metric-value" id="sensor-rainfall">—</div>
+              <div class="metric-status"><span class="dot dot-muted"></span> From weather API</div>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon amber">🕐</div>
+            <div class="metric-body">
+              <div class="metric-title">Last Sensor Sync</div>
+              <div class="metric-value" style="font-size:1rem;line-height:1.3" id="sensor-last-sync">—</div>
+              <div class="metric-status"><span class="dot dot-muted"></span> ESP32 → Raspberry Pi</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Decision + NPK + Pump grid -->
+        <div class="decision-grid">
+
+          <!-- Irrigation decision -->
+          <div class="recommendation-box">
+            <div class="section-mini-title">Irrigation Decision (AI)</div>
+            <div class="decision-banner" id="db-irrigate-banner">—</div>
+            <div class="recommendation-row">
+              <div class="recommendation-label">Water Requirement</div>
+              <div class="recommendation-time" id="db-water-req">—</div>
+            </div>
+            <div class="recommendation-row">
+              <div class="recommendation-label">Est. Duration</div>
+              <div class="recommendation-time" id="db-duration">—</div>
+            </div>
+            <div class="reason-box">
+              <div class="reason-title">Reason</div>
+              <div class="reason-text" id="db-irrigate-reason">Waiting for sensor data...</div>
+            </div>
+            <div style="margin-top:0.6rem;font-size:0.74rem;color:#5e736a;" id="db-irrigate-model">Model: —</div>
+          </div>
+
+          <!-- NPK status -->
+          <div class="nutrient-box">
+            <div class="section-mini-title">Nutrient (NPK) Status</div>
+            <div class="npk-grid">
+              <div class="npk-item">
+                <span class="npk-label">Nitrogen (N)</span>
+                <strong id="sensor-n-status">—</strong>
+                <small id="sensor-n-value">Value<br>—</small>
+                <em class="ok" id="sensor-n-tag">—</em>
               </div>
-              <small
-                id="location-status"
-                class="mt-2 block text-xs text-slate-500"
-                data-status-idle="{{ t('location_status_hint') }}"
-                data-status-detecting="{{ t('location_status_detecting') }}"
-                data-status-denied="{{ t('location_status_denied') }}"
-                data-status-error="{{ t('location_status_error') }}"
-                data-status-unsupported="{{ t('location_status_unsupported') }}"
-                data-status-resolved="{{ t('location_status_resolved') }}"
-              >{{ t('location_status_hint') }}</small>
+              <div class="npk-item">
+                <span class="npk-label">Phosphorus (P)</span>
+                <strong id="sensor-p-status">—</strong>
+                <small id="sensor-p-value">Value<br>—</small>
+                <em class="ok" id="sensor-p-tag">—</em>
+              </div>
+              <div class="npk-item">
+                <span class="npk-label">Potassium (K)</span>
+                <strong id="sensor-k-status">—</strong>
+                <small id="sensor-k-value">Value<br>—</small>
+                <em class="ok" id="sensor-k-tag">—</em>
+              </div>
             </div>
-
-            <div>
-              <label for="season" class="mb-1 block text-sm font-semibold text-slate-700">{{ t('dashboard_season_label') }}</label>
-              <select id="season" name="season" class="w-full rounded-xl border border-brand-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand-200">
-                <option value="Kharif" {% if selected_season == 'Kharif' %}selected{% endif %}>{{ t('season_kharif') }}</option>
-                <option value="Rabi" {% if selected_season == 'Rabi' %}selected{% endif %}>{{ t('season_rabi') }}</option>
-                <option value="Zaid" {% if selected_season == 'Zaid' %}selected{% endif %}>{{ t('season_zaid') }}</option>
-              </select>
-            </div>
-
-            <div>
-              <label for="crop_type" class="mb-1 block text-sm font-semibold text-slate-700">{{ t('dashboard_crop_label') }}</label>
-              <input id="crop_type" name="crop_type" type="text" value="{{ input_crop }}" placeholder="{{ t('crop_placeholder') }}" class="w-full rounded-xl border border-brand-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand-200" />
-            </div>
+            <div class="recommendation-note" id="db-fertilizer-summary">Waiting for NPK data...</div>
           </div>
-          <button class="inline-flex rounded-xl bg-brand-600 px-5 py-3 text-sm font-bold text-white hover:bg-brand-700" type="submit">{{ t('get_recommendation') }}</button>
-        </form>
+
+          <!-- Pump control -->
+          <div class="pump-box">
+            <div class="section-mini-title">Pump Control</div>
+            <div class="pump-status" id="pump-status-text">—</div>
+            <div class="pump-meta" id="pump-last-trigger">Triggered by<br><strong>—</strong></div>
+            <div class="pump-meta" id="pump-last-duration">Last duration<br><strong>—</strong></div>
+            <div class="pump-actions">
+              <button type="button" class="pump-button start" id="pump-on-btn">▶ Start Pump</button>
+              <button type="button" class="pump-button stop" id="pump-off-btn">■ Stop Pump</button>
+            </div>
+            <div style="margin-top:0.6rem;font-size:0.72rem;color:#5e736a;" id="pump-feedback"></div>
+          </div>
+        </div>
+
+        <!-- Charts + recent alerts -->
+        <div class="detail-grid">
+          <div class="chart-card">
+            <div class="chart-title">Soil Moisture Trend</div>
+            <canvas id="chart-moisture" height="160"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Temperature &amp; Humidity Trend</div>
+            <canvas id="chart-temp-humid" height="160"></canvas>
+          </div>
+          <div class="alert-card">
+            <div class="chart-title">Active Alerts</div>
+            <ul class="alert-list" id="db-alert-list">
+              <li><span class="alert-dot blue"></span><span>Loading...</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Bottom field info (from settings) -->
+        <div class="bottom-metrics">
+          <div class="mini-summary"><span>📐</span> Field Area <strong id="bm-area">—</strong></div>
+          <div class="mini-summary"><span>🟫</span> Soil Type <strong id="bm-soil">—</strong></div>
+          <div class="mini-summary"><span>🌾</span> Crop <strong>Paddy (Rice)</strong></div>
+          <div class="mini-summary"><span>🚿</span> Irrigation <strong id="bm-irr-type">—</strong></div>
+          <div class="mini-summary"><span>📍</span> Location <strong id="bm-location">—</strong></div>
+        </div>
       </section>
 
-      <section class="mt-6 glass-card p-6">
-        <div class="section-header">
-          <h2 class="section-title">{{ t('crop_snapshot_title') }}</h2>
-          <p class="section-subtitle">{{ t('crop_snapshot_subtitle') }}</p>
+      <!-- ════════════════════════════════════════════════════════
+           SECTION: Live Monitoring
+      ══════════════════════════════════════════════════════════ -->
+      <section class="content-panel-section" data-section-panel="monitoring">
+        <div class="content-panel-header">
+          <h3>Live Monitoring</h3>
+          <p>Latest sensor reading from ESP32 via Raspberry Pi.</p>
         </div>
-        <div class="insight-grid">
-          <div class="insight-card">
-            <h3 class="insight-title">{{ t('crop_card_crop_title') }}</h3>
-            <p class="insight-text">{{ t('crop_card_crop_desc') }}</p>
+
+        <div id="monitoring-loading" class="info-card" style="text-align:center;padding:2rem;">
+          Loading sensor data...
+        </div>
+
+        <div id="monitoring-content" style="display:none;">
+          <div class="kpi-grid" style="grid-template-columns:repeat(3,minmax(180px,1fr));">
+            <div class="metric-card">
+              <div class="metric-icon blue">💧</div>
+              <div class="metric-body">
+                <div class="metric-title">Soil Moisture</div>
+                <div class="metric-value" id="mon-soil-moisture">—</div>
+                <div class="metric-status" id="mon-soil-status"><span class="dot dot-muted"></span> —</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon orange">🌡</div>
+              <div class="metric-body">
+                <div class="metric-title">Air Temperature</div>
+                <div class="metric-value" id="mon-temperature">—</div>
+                <div class="metric-status" id="mon-temp-status"><span class="dot dot-muted"></span> —</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon cyan">💦</div>
+              <div class="metric-body">
+                <div class="metric-title">Humidity</div>
+                <div class="metric-value" id="mon-humidity">—</div>
+                <div class="metric-status" id="mon-humid-status"><span class="dot dot-muted"></span> —</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon" style="background:rgba(34,197,94,0.08);">🌿</div>
+              <div class="metric-body">
+                <div class="metric-title">Nitrogen (N)</div>
+                <div class="metric-value" id="mon-nitrogen">—</div>
+                <div class="metric-status" id="mon-n-status"><span class="dot dot-muted"></span> —</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon" style="background:rgba(168,85,247,0.08);">🔬</div>
+              <div class="metric-body">
+                <div class="metric-title">Phosphorus (P)</div>
+                <div class="metric-value" id="mon-phosphorus">—</div>
+                <div class="metric-status" id="mon-p-status"><span class="dot dot-muted"></span> —</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon" style="background:rgba(245,158,11,0.08);">⚗️</div>
+              <div class="metric-body">
+                <div class="metric-title">Potassium (K)</div>
+                <div class="metric-value" id="mon-potassium">—</div>
+                <div class="metric-status" id="mon-k-status"><span class="dot dot-muted"></span> —</div>
+              </div>
+            </div>
           </div>
-          <div class="insight-card">
-            <h3 class="insight-title">{{ t('crop_card_irrigation_title') }}</h3>
-            <p class="insight-text">{{ t('crop_card_irrigation_desc') }}</p>
+
+          <div class="info-grid" style="margin-top:1rem;">
+            <div class="info-card">
+              <h3>Device</h3>
+              <p id="mon-device-id">—</p>
+            </div>
+            <div class="info-card">
+              <h3>Last Sync</h3>
+              <p id="mon-timestamp">—</p>
+            </div>
+            <div class="info-card">
+              <h3>Data Source</h3>
+              <p id="mon-source">—</p>
+            </div>
           </div>
-          <div class="insight-card">
-            <h3 class="insight-title">{{ t('crop_card_market_title') }}</h3>
-            <p class="insight-text">{{ t('crop_card_market_desc') }}</p>
+        </div>
+
+        <div id="monitoring-no-data" class="info-card" style="display:none;text-align:center;padding:2rem;color:#5e736a;">
+          No sensor data yet. Waiting for ESP32 to send readings via Raspberry Pi.
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════
+           SECTION: Irrigation
+      ══════════════════════════════════════════════════════════ -->
+      <section class="content-panel-section" data-section-panel="irrigation">
+        <div class="content-panel-header">
+          <h3>Irrigation Decision</h3>
+          <p>AI-powered irrigation recommendation based on latest sensor and weather data.</p>
+        </div>
+
+        <div id="irr-loading" class="info-card" style="text-align:center;padding:2rem;">Loading...</div>
+        <div id="irr-content" style="display:none;">
+          <div class="decision-grid" style="grid-template-columns:1fr 1fr;">
+            <div class="recommendation-box">
+              <div class="section-mini-title">AI Decision</div>
+              <div class="decision-banner" id="irr-banner">—</div>
+              <div class="recommendation-row">
+                <div class="recommendation-label">Water Requirement</div>
+                <div class="recommendation-time" id="irr-water-req">—</div>
+              </div>
+              <div class="recommendation-row">
+                <div class="recommendation-label">Estimated Duration</div>
+                <div class="recommendation-time" id="irr-duration">—</div>
+              </div>
+              <div class="reason-box">
+                <div class="reason-title">Reason</div>
+                <div class="reason-text" id="irr-reason">—</div>
+              </div>
+            </div>
+
+            <div class="recommendation-box">
+              <div class="section-mini-title">Input Data Used</div>
+              <div class="info-grid" style="grid-template-columns:1fr 1fr;gap:0.5rem;margin-top:0;">
+                <div class="info-card" style="padding:0.6rem;">
+                  <h3 style="font-size:0.75rem;">Soil Moisture</h3>
+                  <p id="irr-in-sm">—</p>
+                </div>
+                <div class="info-card" style="padding:0.6rem;">
+                  <h3 style="font-size:0.75rem;">Temperature</h3>
+                  <p id="irr-in-temp">—</p>
+                </div>
+                <div class="info-card" style="padding:0.6rem;">
+                  <h3 style="font-size:0.75rem;">Humidity</h3>
+                  <p id="irr-in-humid">—</p>
+                </div>
+                <div class="info-card" style="padding:0.6rem;">
+                  <h3 style="font-size:0.75rem;">Rainfall (24 h)</h3>
+                  <p id="irr-in-rain">—</p>
+                </div>
+              </div>
+              <div style="margin-top:0.8rem;font-size:0.74rem;color:#5e736a;">
+                Model: <strong id="irr-model">—</strong> &nbsp;|&nbsp;
+                Confidence: <strong id="irr-confidence">—</strong><br>
+                Decision time: <strong id="irr-timestamp">—</strong>
+              </div>
+
+              <button type="button" id="irr-predict-btn" class="pump-button start" style="margin-top:1rem;width:100%;">
+                🔄 Run New Prediction
+              </button>
+            </div>
           </div>
         </div>
       </section>
-    </section>
 
-    <section class="dashboard-section" data-section-panel="price">
-      <div class="section-header">
-        <h2 class="section-title">{{ t('price_title') }}</h2>
-        <p class="section-subtitle">{{ t('price_description') }}</p>
-      </div>
-      <div class="price-filters">
-        <input id="price-search" type="text" placeholder="{{ t('price_search_placeholder') }}" class="price-input" />
-        <select id="price-region" class="price-input">
-          <option value="all">{{ t('price_region_all') }}</option>
-        </select>
-        <div class="price-category">
-          <button type="button" class="chip is-active" data-category="all">{{ t('price_category_all') }}</button>
-          <button type="button" class="chip" data-category="Vegetables">{{ t('price_category_vegetables') }}</button>
-          <button type="button" class="chip" data-category="Fruits">{{ t('price_category_fruits') }}</button>
-          <button type="button" class="chip" data-category="Leafy">{{ t('price_category_leafy') }}</button>
-          <button type="button" class="chip" data-category="Other">{{ t('price_category_other') }}</button>
+      <!-- ════════════════════════════════════════════════════════
+           SECTION: Nutrient & Fertilizer
+      ══════════════════════════════════════════════════════════ -->
+      <section class="content-panel-section" data-section-panel="nutrient">
+        <div class="content-panel-header">
+          <h3>NPK &amp; Fertilizer Recommendation</h3>
+          <p>AI recommendation based on live NPK sensor readings from the field.</p>
         </div>
-      </div>
-      <div class="price-layout">
-        <div id="price-grid" class="price-grid" data-last-year-label="{{ t('price_last_year') }}"></div>
-        <div id="price-detail" class="glass-card p-5 price-detail">
-          <p class="price-detail-kicker">{{ t('price_detail_title') }}</p>
-          <h3 id="price-detail-name" class="price-detail-name">-</h3>
-          <p id="price-detail-subtitle" class="price-detail-subtitle">{{ t('price_detail_subtitle') }}</p>
-          <div class="price-detail-table">
-            <div class="price-detail-table-head">
-              <span>{{ t('price_detail_region_label') }}</span>
-              <span>{{ t('price_detail_current_label') }}</span>
-              <span>{{ t('price_detail_previous_label') }}</span>
+
+        <div id="fert-loading" class="info-card" style="text-align:center;padding:2rem;">Loading...</div>
+        <div id="fert-content" style="display:none;">
+          <div class="decision-grid" style="grid-template-columns:1fr 1fr;">
+
+            <div class="nutrient-box">
+              <div class="section-mini-title">NPK Status</div>
+              <div class="npk-grid">
+                <div class="npk-item">
+                  <span class="npk-label">Nitrogen (N)</span>
+                  <strong id="fert-n-status">—</strong>
+                  <small id="fert-n-value">—</small>
+                  <em id="fert-n-tag" class="ok">—</em>
+                </div>
+                <div class="npk-item">
+                  <span class="npk-label">Phosphorus (P)</span>
+                  <strong id="fert-p-status">—</strong>
+                  <small id="fert-p-value">—</small>
+                  <em id="fert-p-tag" class="ok">—</em>
+                </div>
+                <div class="npk-item">
+                  <span class="npk-label">Potassium (K)</span>
+                  <strong id="fert-k-status">—</strong>
+                  <small id="fert-k-value">—</small>
+                  <em id="fert-k-tag" class="ok">—</em>
+                </div>
+              </div>
             </div>
-            <div id="price-detail-rows" class="price-detail-table-body"></div>
+
+            <div class="recommendation-box">
+              <div class="section-mini-title">Fertilizer Recommendation</div>
+              <div class="decision-banner" id="fert-priority-banner">—</div>
+              <div class="recommendation-note" id="fert-summary" style="margin-top:0.8rem;">—</div>
+              <div id="fert-applications" style="margin-top:0.8rem;display:grid;gap:0.5rem;"></div>
+              <div style="margin-top:0.8rem;font-size:0.74rem;color:#5e736a;">
+                Model: <strong id="fert-model">—</strong><br>
+                Updated: <strong id="fert-timestamp">—</strong>
+              </div>
+              <button type="button" id="fert-predict-btn" class="pump-button start" style="margin-top:1rem;width:100%;">
+                🔄 Run New Recommendation
+              </button>
+            </div>
+          </div>
+
+          <div class="info-card" style="margin-top:1rem;font-size:0.82rem;color:#5e736a;" id="fert-note"></div>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════
+           SECTION: Weather Alerts
+      ══════════════════════════════════════════════════════════ -->
+      <section class="content-panel-section" data-section-panel="weather-alerts">
+        <div class="content-panel-header">
+          <h3>Weather</h3>
+          <p>Current conditions and 24-hour forecast from OpenWeatherMap.</p>
+        </div>
+
+        <div class="location-form">
+          <div class="location-field-wrap">
+            <label for="wx-location" class="location-label">Location (for weather)</label>
+            <div class="location-controls">
+              <input id="wx-location" type="text" placeholder="e.g. Bengaluru" class="location-input" />
+              <button type="button" id="wx-fetch-btn" class="location-button">Fetch Weather</button>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
 
-    <section class="dashboard-section" data-section-panel="weather">
-      <div class="section-header">
-        <h2 class="section-title">{{ t('weather_title') }}</h2>
-        <p class="section-subtitle">{{ t('weather_description') }}</p>
-      </div>
-      <div class="info-grid">
-        <div class="info-card">
-          <h3>{{ t('weather_card_drought_title') }}</h3>
-          <p>{{ t('weather_card_drought_desc') }}</p>
-        </div>
-        <div class="info-card">
-          <h3>{{ t('weather_card_rain_title') }}</h3>
-          <p>{{ t('weather_card_rain_desc') }}</p>
-        </div>
-        <div class="info-card">
-          <h3>{{ t('weather_card_temp_title') }}</h3>
-          <p>{{ t('weather_card_temp_desc') }}</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="dashboard-section" data-section-panel="soil">
-      <div class="section-header">
-        <h2 class="section-title">{{ t('soil_title') }}</h2>
-        <p class="section-subtitle">{{ t('soil_description') }}</p>
-      </div>
-      <div class="info-grid">
-        <div class="info-card">
-          <h3>{{ t('soil_card_ph_title') }}</h3>
-          <p>{{ t('soil_card_ph_desc') }}</p>
-        </div>
-        <div class="info-card">
-          <h3>{{ t('soil_card_moisture_title') }}</h3>
-          <p>{{ t('soil_card_moisture_desc') }}</p>
-        </div>
-        <div class="info-card">
-          <h3>{{ t('soil_card_fertility_title') }}</h3>
-          <p>{{ t('soil_card_fertility_desc') }}</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="dashboard-section" data-section-panel="irrigation">
-      <div class="section-header">
-        <h2 class="section-title">{{ t('irrigation_title') }}</h2>
-        <p class="section-subtitle">{{ t('irrigation_description') }}</p>
-      </div>
-      <div class="info-grid">
-        <div class="info-card">
-          <h3>{{ t('irrigation_card_weekly_title') }}</h3>
-          <p>{{ t('irrigation_card_weekly_desc') }}</p>
-        </div>
-        <div class="info-card">
-          <h3>{{ t('irrigation_card_method_title') }}</h3>
-          <p>{{ t('irrigation_card_method_desc') }}</p>
-        </div>
-        <div class="info-card">
-          <h3>{{ t('irrigation_card_alert_title') }}</h3>
-          <p>{{ t('irrigation_card_alert_desc') }}</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="dashboard-section" data-section-panel="market">
-      <div class="section-header">
-        <h2 class="section-title">{{ t('market_title') }}</h2>
-        <p class="section-subtitle">{{ t('market_description') }}</p>
-      </div>
-      <div class="info-grid">
-        <div class="info-card">
-          <h3>{{ t('market_card_price_title') }}</h3>
-          <p>{{ t('market_card_price_desc') }}</p>
-        </div>
-        <div class="info-card">
-          <h3>{{ t('market_card_demand_title') }}</h3>
-          <p>{{ t('market_card_demand_desc') }}</p>
-        </div>
-        <div class="info-card">
-          <h3>{{ t('market_card_export_title') }}</h3>
-          <p>{{ t('market_card_export_desc') }}</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="dashboard-section" data-section-panel="feedback">
-      <div class="section-header">
-        <h2 class="section-title">{{ t('feedback_title') }}</h2>
-        <p class="section-subtitle">{{ t('feedback_description') }}</p>
-      </div>
-      <div class="glass-card p-6">
-        <form id="feedback-form" class="space-y-4">
-          <div>
-            <label class="mb-1 block text-sm font-semibold text-slate-700" for="feedback-name">{{ t('feedback_name_label') }}</label>
-            <input id="feedback-name" type="text" class="w-full rounded-xl border border-brand-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand-200" placeholder="{{ t('feedback_name_placeholder') }}" />
+        <div id="wx-loading" style="display:none;" class="info-card" style="text-align:center;padding:2rem;">Loading...</div>
+        <div id="wx-content" style="display:none;">
+          <div class="kpi-grid" style="grid-template-columns:repeat(4,minmax(160px,1fr));">
+            <div class="metric-card">
+              <div class="metric-icon orange">🌡</div>
+              <div class="metric-body">
+                <div class="metric-title">Temperature</div>
+                <div class="metric-value" id="wx-temp">—</div>
+                <div class="metric-status" id="wx-condition">—</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon cyan">💦</div>
+              <div class="metric-body">
+                <div class="metric-title">Humidity</div>
+                <div class="metric-value" id="wx-humidity">—</div>
+                <div class="metric-status">Relative humidity</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon slate">🌧</div>
+              <div class="metric-body">
+                <div class="metric-title">Rainfall (24 h)</div>
+                <div class="metric-value" id="wx-rain">—</div>
+                <div class="metric-status">Expected mm</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon" style="background:rgba(148,163,184,0.12);">💨</div>
+              <div class="metric-body">
+                <div class="metric-title">Wind Speed</div>
+                <div class="metric-value" id="wx-wind">—</div>
+                <div class="metric-status">m/s</div>
+              </div>
+            </div>
           </div>
-          <div>
-            <label class="mb-1 block text-sm font-semibold text-slate-700" for="feedback-rating">{{ t('feedback_rating_label') }}</label>
-            <select id="feedback-rating" class="w-full rounded-xl border border-brand-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand-200">
-              <option value="">{{ t('feedback_rating_placeholder') }}</option>
-              <option value="5">5</option>
-              <option value="4">4</option>
-              <option value="3">3</option>
-              <option value="2">2</option>
-              <option value="1">1</option>
-            </select>
+
+          <div style="margin-top:1rem;">
+            <div class="chart-title">Weather Alerts</div>
+            <ul class="alert-list" id="wx-alert-list" style="margin-top:0.5rem;"></ul>
           </div>
-          <div>
-            <label class="mb-1 block text-sm font-semibold text-slate-700" for="feedback-message">{{ t('feedback_message_label') }}</label>
-            <textarea id="feedback-message" rows="4" class="w-full rounded-xl border border-brand-200 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand-200" placeholder="{{ t('feedback_message_placeholder') }}"></textarea>
-          </div>
-          <button type="submit" class="inline-flex rounded-xl bg-brand-700 px-5 py-3 text-sm font-bold text-white hover:bg-brand-800">{{ t('feedback_submit') }}</button>
-        </form>
-        <div id="feedback-success" class="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700" hidden>
-          {{ t('feedback_success') }}
         </div>
-      </div>
-    </section>
+
+        <div id="wx-no-key" style="display:none;" class="info-card" style="text-align:center;padding:2rem;color:#5e736a;">
+          OpenWeatherMap API key not configured. Set <code>OPENWEATHER_API_KEY</code> in <code>.env</code> to enable live weather data.
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════
+           SECTION: History & Analytics
+      ══════════════════════════════════════════════════════════ -->
+      <section class="content-panel-section" data-section-panel="history">
+        <div class="content-panel-header">
+          <h3>History &amp; Analytics</h3>
+          <p>Sensor readings, irrigation cycles and AI decisions from MongoDB.</p>
+        </div>
+
+        <div style="display:flex;gap:0.7rem;align-items:center;margin-bottom:1rem;">
+          <select id="history-days" class="location-input" style="max-width:200px;">
+            <option value="7">Last 7 days</option>
+            <option value="14">Last 14 days</option>
+            <option value="30">Last 30 days</option>
+          </select>
+          <button type="button" id="history-load-btn" class="location-button">Load</button>
+        </div>
+
+        <div id="history-loading" class="info-card" style="display:none;text-align:center;padding:2rem;">Loading...</div>
+        <div id="history-content" style="display:none;">
+          <div class="kpi-grid" style="grid-template-columns:repeat(4,minmax(160px,1fr));">
+            <div class="metric-card">
+              <div class="metric-icon blue">📊</div>
+              <div class="metric-body">
+                <div class="metric-title">Sensor Readings</div>
+                <div class="metric-value" id="hist-readings">—</div>
+                <div class="metric-status" id="hist-moisture-trend"><span class="dot dot-muted"></span> Moisture trend: —</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon cyan">💧</div>
+              <div class="metric-body">
+                <div class="metric-title">Avg Soil Moisture</div>
+                <div class="metric-value" id="hist-avg-sm">—</div>
+                <div class="metric-status"><span class="dot dot-muted"></span> Avg over period</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon" style="background:rgba(34,197,94,0.08);">🚿</div>
+              <div class="metric-body">
+                <div class="metric-title">Irrigation Cycles</div>
+                <div class="metric-value" id="hist-cycles">—</div>
+                <div class="metric-status" id="hist-total-duration"><span class="dot dot-muted"></span> Total: — min</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon" style="background:rgba(168,85,247,0.08);">🧠</div>
+              <div class="metric-body">
+                <div class="metric-title">AI Decisions</div>
+                <div class="metric-value" id="hist-decisions">—</div>
+                <div class="metric-status" id="hist-irrigate-yes"><span class="dot dot-muted"></span> Irrigate: —</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:1rem;">
+            <div class="chart-title">Sensor History</div>
+            <canvas id="chart-history-sm" height="120" style="margin-top:0.5rem;"></canvas>
+          </div>
+
+          <div style="margin-top:1rem;">
+            <div class="chart-title">Pump Events (Recent)</div>
+            <ul class="alert-list" id="hist-pump-list" style="margin-top:0.5rem;"></ul>
+          </div>
+        </div>
+
+        <div id="history-no-data" class="info-card" style="text-align:center;padding:2rem;color:#5e736a;">
+          No history data yet. Data will appear once sensor readings are being stored in MongoDB.
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════
+           SECTION: Alerts
+      ══════════════════════════════════════════════════════════ -->
+      <section class="content-panel-section" data-section-panel="other-alerts">
+        <div class="content-panel-header">
+          <h3>Active Alerts</h3>
+          <p>Dynamically derived from latest sensor, NPK, weather and AI decision data.</p>
+        </div>
+
+        <div id="alerts-loading" class="info-card" style="text-align:center;padding:2rem;">Loading...</div>
+        <div id="alerts-content" style="display:none;">
+          <div id="alerts-list" style="display:grid;gap:0.8rem;"></div>
+        </div>
+        <div id="alerts-empty" style="display:none;" class="info-card" style="text-align:center;padding:2rem;color:#1f7a4c;">
+          ✅ No active alerts — field conditions are good.
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════
+           SECTION: Settings
+      ══════════════════════════════════════════════════════════ -->
+      <section class="content-panel-section" data-section-panel="settings">
+        <div class="content-panel-header">
+          <h3>Settings</h3>
+          <p>Farmer profile, field configuration and device thresholds.</p>
+        </div>
+
+        <div id="settings-loading" class="info-card" style="text-align:center;padding:2rem;">Loading...</div>
+        <div id="settings-content" style="display:none;">
+          <form id="settings-form" style="display:grid;gap:1rem;">
+            <div class="info-card">
+              <h3>Farmer Profile</h3>
+              <div class="info-grid" style="margin-top:0.5rem;">
+                <div>
+                  <label class="location-label">Name</label>
+                  <input type="text" name="farmer.name" id="cfg-farmer-name" class="location-input" />
+                </div>
+                <div>
+                  <label class="location-label">Location</label>
+                  <input type="text" name="farmer.location" id="cfg-farmer-location" class="location-input" />
+                </div>
+                <div>
+                  <label class="location-label">Phone</label>
+                  <input type="text" name="farmer.phone" id="cfg-farmer-phone" class="location-input" />
+                </div>
+              </div>
+            </div>
+
+            <div class="info-card">
+              <h3>Field Configuration</h3>
+              <div class="info-grid" style="margin-top:0.5rem;">
+                <div>
+                  <label class="location-label">Field Name</label>
+                  <input type="text" name="field.name" id="cfg-field-name" class="location-input" />
+                </div>
+                <div>
+                  <label class="location-label">Area</label>
+                  <input type="text" name="field.area" id="cfg-field-area" class="location-input" placeholder="e.g. 2.5 acres" />
+                </div>
+                <div>
+                  <label class="location-label">Soil Type</label>
+                  <input type="text" name="field.soilType" id="cfg-soil-type" class="location-input" placeholder="e.g. Clay Loam" />
+                </div>
+                <div>
+                  <label class="location-label">Irrigation Type</label>
+                  <input type="text" name="field.irrigationType" id="cfg-irr-type" class="location-input" placeholder="e.g. Drip / Flood" />
+                </div>
+              </div>
+            </div>
+
+            <div class="info-card">
+              <h3>Soil Moisture Thresholds</h3>
+              <div class="info-grid" style="margin-top:0.5rem;">
+                <div>
+                  <label class="location-label">Irrigate below (%)</label>
+                  <input type="number" name="thresholds.soilMoistureLow" id="cfg-sm-low" class="location-input" min="0" max="100" />
+                </div>
+                <div>
+                  <label class="location-label">Skip irrigation above (%)</label>
+                  <input type="number" name="thresholds.soilMoistureHigh" id="cfg-sm-high" class="location-input" min="0" max="100" />
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:0.8rem;">
+              <button type="submit" class="pump-button start" style="width:auto;padding:0.7rem 1.4rem;">💾 Save Settings</button>
+              <span id="settings-feedback" style="font-size:0.82rem;color:#1f7a4c;align-self:center;"></span>
+            </div>
+          </form>
+        </div>
+      </section>
+
+    </main>
   </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
   window.resolveLocationUrl = "/resolve-location";
 </script>

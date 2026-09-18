@@ -109,7 +109,6 @@ app.use(
 
 app.use("/static", express.static(path.join(__dirname, "frontend", "static")));
 
-app.use(apiRoutes);
 app.use("/api", apiRoutes);
 
 const templatesPath = path.join(__dirname, "frontend", "templates");
@@ -145,6 +144,10 @@ app.get("/set-language", (req, res) => {
 });
 
 app.get("/", (req, res) => {
+  res.render("index.html");
+});
+
+app.get("/landing", (req, res) => {
   res.render("landing.html");
 });
 

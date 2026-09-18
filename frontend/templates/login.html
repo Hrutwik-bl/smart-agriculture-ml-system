@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <section class="flex-1 grid gap-6 lg:grid-cols-2 content-center">
-  <div class="auth-hero p-8 shadow-soft-xl" style="background-image: url('/static/login-bg.png');">
+  <div class="auth-hero p-8 shadow-soft-xl" style="background-image: url('/static/images/login-bg.png');">
     <div class="auth-hero-content">
       <p class="text-xs font-semibold tracking-widest text-brand-50/90">{{ t('login_kicker') }}</p>
       <h2 class="font-display mt-3 text-3xl font-black">{{ t('welcome_back') }}</h2>
@@ -45,5 +45,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="/static/password-toggle.js"></script>
+<script src="/static/auth.js"></script>
 {% endblock %}
